@@ -1,0 +1,9 @@
+telegtoken.py
+venv/textfiles/*
+*.pyc
+*__pycache__*
+*token*
+venv/Lib
+venv/Scripts
+pyvenv.cfg
+.idea
