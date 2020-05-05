@@ -14,7 +14,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, Conv
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-players_names = ['example_player1_for_testing','example_player2_for_testing','example_player3_for_testing','example_player4_for_testing','example_player5_for_testing','example_player6_for_testing','example_player7_for_testing','example_player8_for_testing','example_player9_for_testing','example_player10_for_testing','example_player11_for_testing','example_player12_for_testing','example_player13_for_testing','example_player14_for_testing','example_player15_for_testing']
+players_names = ['@bahman_canon','@gggg_gggg_ggggg','@mytest_ffff','@mytest_eeee','@mytest_dddd','@mytest_cccc','@mytest_bbbb','@mytest_aaaa']
 player_roles = []
 player_roles_as_text = []
 player_roles_are_assigned = False
@@ -345,37 +345,40 @@ def made_a_choice(update, context):
                 # 5 = mafia / aadi
                 # 6 = mafia / raees mafia
 
+                if daynight_num >= 2:
+                    # --- process the night events ---
+                    # who did the doctor heal?
+                    if (player_alive_or_dead[player_roles.index(3)]==0): #doctor is dead
+                        doctor_healed = []
+                    else: #doctor is alive
+                        if doctor_heal_2_first_2_nights == False or daynight_num >= 4: #doctor has healed only one player
+                            doctor_healed = [choice_at_night_doctor_heal]
+                        else: # doctor has healed two players
+                            player1_healed = choice_at_night_doctor_heal[0:choice_at_night_doctor_heal.find(' ')]
+                            player2_healed = choice_at_night_doctor_heal[(choice_at_night_doctor_heal.find(' ') + 1):]
+                            doctor_healed = [player1_healed, player2_healed]
+                    #doctor_healed is a list of everyone that doctor healed
 
-                # --- process the night events ---
-                # who did the doctor heal?
-                if (player_alive_or_dead[player_roles.index(3)]==0): #doctor is dead
-                    doctor_healed = []
-                else: #doctor is alive
-                    if doctor_heal_2_first_2_nights == False or daynight_num >= 4: #doctor has healed only one player
-                        doctor_healed = [choice_at_night_doctor_heal]
-                    else: # doctor has healed two players
-                        player1_healed = choice_at_night_doctor_heal[0:choice_at_night_doctor_heal.find(' ')]
-                        player2_healed = choice_at_night_doctor_heal[(choice_at_night_doctor_heal.find(' ') + 1):]
-                        doctor_healed = [player1_healed, player2_healed]
-                #doctor_healed is a list of everyone that doctor healed
-
-                #who died?
-                if (choice_at_night_mafia_kill in doctor_healed):
-                    last_night_message = 'mafia attempted to kill a player, but doctor healed the player! '
-                else:
-                    last_night_message = 'mafia killed '+choice_at_night_mafia_kill+ ' and doctor could not heal. '
-                    player_alive_or_dead[players_names.index(choice_at_night_mafia_kill)] = 0
-
-                if (choice_at_night_taktir_shoot == 'nobody'):
-                    last_night_message = last_night_message + 'taktirandaz did not shoot.'
-                else:
-                    if (player_roles[players_names.index(choice_at_night_taktir_shoot)]==5) or (player_roles[players_names.index(choice_at_night_taktir_shoot)]==6):
-                        last_night_message = last_night_message + 'taktirandaz correctly shot '+choice_at_night_taktir_shoot
-                        player_alive_or_dead[players_names.index(choice_at_night_taktir_shoot)] = 0
+                    #who died?
+                    if (choice_at_night_mafia_kill in doctor_healed):
+                        last_night_message = 'mafia attempted to kill a player, but doctor healed the player! '
                     else:
-                        last_night_message = last_night_message + 'taktirandaz incorrectly shot and died.'
-                        player_alive_or_dead[player_roles.index(4)] = 0
-                # --- --- --- --- --- --- --- ---
+                        last_night_message = 'mafia killed '+choice_at_night_mafia_kill+ ' and doctor could not heal. '
+                        player_alive_or_dead[players_names.index(choice_at_night_mafia_kill)] = 0
+
+                    if (choice_at_night_taktir_shoot == 'nobody'):
+                        last_night_message = last_night_message + 'taktirandaz did not shoot.'
+                    else:
+                        if (player_roles[players_names.index(choice_at_night_taktir_shoot)]==5) or (player_roles[players_names.index(choice_at_night_taktir_shoot)]==6):
+                            last_night_message = last_night_message + 'taktirandaz correctly shot '+choice_at_night_taktir_shoot
+                            player_alive_or_dead[players_names.index(choice_at_night_taktir_shoot)] = 0
+                        else:
+                            last_night_message = last_night_message + 'taktirandaz incorrectly shot and died.'
+                            player_alive_or_dead[player_roles.index(4)] = 0
+                    # --- --- --- --- --- --- --- ---
+                else:
+                    last_night_message = 'in the first night, only karagah asks one. karagah asked successfully...'
+
                 daynight_num = daynight_num + 1
                 day_or_night = 1
                 #now it is officially the next day! good morning.
@@ -608,7 +611,14 @@ def made_a_choice(update, context):
                 for i in range(len(players_names)):
                     current_player = players_names[i]
                     current_role = player_roles_as_text[i]
-                    print_pair = [current_player,current_role]
+                    if player_alive_or_dead[i] == 1:
+                        current_alive_or_dead = 'alive'
+                    elif player_alive_or_dead[i] == 0:
+                        current_alive_or_dead = 'dead'
+                    else:
+                        current_alive_or_dead = 'error?'
+
+                    print_pair = [current_player,current_role,current_alive_or_dead]
                     update.message.reply_text(print_pair)
 
                 update.message.reply_text('----------')
