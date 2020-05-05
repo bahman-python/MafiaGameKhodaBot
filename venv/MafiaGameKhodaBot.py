@@ -24,10 +24,22 @@ door_to_join_open = False
 backup_data_loaded = False
 
 #----new variables defined 5 may 2020 ----
+doctor_heal_2_first_2_nights = True
+
 day_or_night = 0      #0=not initialized, 1=day, 2=night
 daynight_num = 0      #0=not initialized, 1=first day or night, 2=second day or night, ...
 last_night_message = 'game has not been initialized yet'
 player_alive_or_dead = []  #1=alive, 0=dead
+
+enable_at_night_mafia_kill = False
+enable_at_night_doctor_heal = False
+enable_at_night_karagah_ask = False
+enable_at_night_taktir_shoot = False
+
+choice_at_night_mafia_kill = ''
+choice_at_night_doctor_heal = ''
+choice_at_night_karagah_ask = ''
+choice_at_night_taktir_shoot = ''
 #-----------------------------------------
 
 CHOOSING, TYPING_REPLY = range(2)
@@ -44,7 +56,7 @@ reply_keyboard = [['/start','add me to game'],
                   ['list all players', 'assign roles'],
                   ['list all players and roles']]
 
-markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
 def start(update, context):
     global backup_data_loaded
@@ -68,6 +80,18 @@ def made_a_choice(update, context):
     global door_to_join_open
     global day_or_night
     global daynight_num
+    global enable_at_night_mafia_kill
+    global enable_at_night_doctor_heal
+    global enable_at_night_karagah_ask
+    global enable_at_night_taktir_shoot
+    global last_night_message
+    global choice_at_night_mafia_kill
+    global choice_at_night_doctor_heal
+    global choice_at_night_karagah_ask
+    global choice_at_night_taktir_shoot
+    global player_alive_or_dead
+
+
     next_state = CHOOSING
     text = update.message.text
     user_command = text
@@ -87,6 +111,20 @@ def made_a_choice(update, context):
                 player_roles_are_assigned = False
                 alternative_khoda = 'nobody... oh nobody...'
                 has_karagah_already_asked = True
+                day_or_night = 0  # 0=not initialized, 1=day, 2=night
+                daynight_num = 0  # 0=not initialized, 1=first day or night, 2=second day or night, ...
+                last_night_message = 'game has not been initialized yet'
+                player_alive_or_dead = []  # 1=alive, 0=dead
+
+                enable_at_night_mafia_kill = False
+                enable_at_night_doctor_heal = False
+                enable_at_night_karagah_ask = False
+                enable_at_night_taktir_shoot = False
+
+                choice_at_night_mafia_kill = ''
+                choice_at_night_doctor_heal = ''
+                choice_at_night_karagah_ask = ''
+                choice_at_night_taktir_shoot = ''
 
                 update.message.reply_text('now, i have cleaned up the list of players. the list is empty now')
 
@@ -97,9 +135,103 @@ def made_a_choice(update, context):
                 update.message.reply_text('door to join should be OPEN in order to remove all players')
         else:
             update.message.reply_text('only admin can reset the player list...')
+    #-----------------------------------------------------------------
+    elif (user_command == 'at night mafia kill'):
+        next_state = CHOOSING
+
+        if day_or_night != 2:
+            update.message.reply_text('this action can be used only at night.')
+        else: #-- ok, it is night
+            if user_id in players_names:
+                if player_alive_or_dead[players_names.index(user_id)] == 0:
+                    update.message.reply_text('you are dead in the game')
+                else: #-- ok, user is alive
+                    if player_roles[players_names.index(user_id)] !=5 and player_roles[players_names.index(user_id)] !=6:
+                        update.message.reply_text('this option is only for mafia.')
+                    else: #-- ok, user is mafia
+                        if enable_at_night_mafia_kill == False:
+                            update.message.reply_text('this option can be used only once per night.')
+                        else: #-- ok, everything ready
+                            update.message.reply_text('all players in game:')
+
+                            for i in range(len(players_names)):
+                                current_player = players_names[i]
+                                if player_alive_or_dead[i] == 1:
+                                    current_alive_or_dead = 'alive'
+                                elif player_alive_or_dead[i] == 0:
+                                     current_alive_or_dead = 'dead'
+                                else:
+                                     current_alive_or_dead = 'error?'
+
+                                print_pair = [current_player, current_alive_or_dead]
+                                update.message.reply_text(print_pair)
+
+                            update.message.reply_text('------')
+                            update.message.reply_text('mafia kill at night, which player do you select:')
+                            next_state = TYPING_REPLY
+            else:
+                update.message.reply_text('i could not find your name in players list :-( are you in the game?')
+    #-----------------------------------------------------------------
+    elif (user_command == 'at night doctor heal'):
+        update.message.reply_text('todo')
+        next_state = CHOOSING
+    #-----------------------------------------------------------------
+    elif (user_command == 'at night karagah ask'):
+        update.message.reply_text('todo')
+        next_state = CHOOSING
+    #-----------------------------------------------------------------
+    elif (user_command == 'at night taktir shoot'):
+        update.message.reply_text('todo')
+        next_state = CHOOSING
+    #-----------------------------------------------------------------
     elif (user_command == '/start'):
         update.message.reply_text('robot is up and running.')
         next_state = CHOOSING
+    #-----------------------------------------------------------------
+    elif user_command == 'from day to night' and is_admin == False:
+        update.message.reply_text('only khoda can do this.')
+        next_state = CHOOSING
+    #-----------------------------------------------------------------
+    elif user_command == 'from day to night' and is_admin == True:
+        if day_or_night != 1:
+            update.message.reply_text('the option should be used in day')
+        else: #-- ok, it is day
+            day_or_night = 2
+            enable_at_night_mafia_kill = True
+            enable_at_night_doctor_heal = True
+            enable_at_night_karagah_ask = True
+            enable_at_night_taktir_shoot = True
+
+            if daynight_num == 1:
+                enable_at_night_mafia_kill = False
+                enable_at_night_doctor_heal = False
+                enable_at_night_taktir_shoot = False
+
+            # 0 = not assigned yet
+            # 1 = shahrvand / aadi
+            # 2 = shahrvand / karagah
+            # 3 = shahrvand / doctor
+            # 4 = shahrvand / taktirandaz
+            # 5 = mafia / aadi
+            # 6 = mafia / raees mafia
+
+            # is karagah alive?
+            if player_alive_or_dead[player_roles.index(2)] == 0: #karagah is dead
+                enable_at_night_karagah_ask = False
+
+            # is doctor alive?
+            if player_alive_or_dead[player_roles.index(3)] == 0: #doctor is dead
+                enable_at_night_doctor_heal = False
+
+            # is taktir alive?
+            if player_alive_or_dead[player_roles.index(4)] == 0: #taktirandaz is dead
+                enable_at_night_taktir_shoot = False
+
+            # ok, night is ready. let's go...
+            update.message.reply_text('it is night and everywhere is dark.')
+
+        next_state = CHOOSING
+    #-----------------------------------------------------------------
     elif (user_command == 'set player dead' and is_admin == False):
         update.message.reply_text('only khoda can do this - set player dead')
         next_state = CHOOSING
@@ -340,7 +472,20 @@ def made_a_choice(update, context):
             if(door_to_join_open == True):
                 players_names = players_names + [user_id]
                 update.message.reply_text('ok, now you are added...'+user_id)
+                day_or_night = 0  # 0=not initialized, 1=day, 2=night
+                daynight_num = 0  # 0=not initialized, 1=first day or night, 2=second day or night, ...
+                last_night_message = 'game has not been initialized yet'
+                player_alive_or_dead = []  # 1=alive, 0=dead
 
+                enable_at_night_mafia_kill = False
+                enable_at_night_doctor_heal = False
+                enable_at_night_karagah_ask = False
+                enable_at_night_taktir_shoot = False
+
+                choice_at_night_mafia_kill = ''
+                choice_at_night_doctor_heal = ''
+                choice_at_night_karagah_ask = ''
+                choice_at_night_taktir_shoot = ''
                 player_roles= []
                 player_roles_as_text = []
                 player_roles_are_assigned = False
@@ -364,6 +509,16 @@ def typed_something_after_question(update, context):
     global player_roles_as_text
     global day_or_night
     global daynight_num
+    global enable_at_night_mafia_kill
+    global enable_at_night_doctor_heal
+    global enable_at_night_karagah_ask
+    global enable_at_night_taktir_shoot
+    global last_night_message
+    global choice_at_night_mafia_kill
+    global choice_at_night_doctor_heal
+    global choice_at_night_karagah_ask
+    global choice_at_night_taktir_shoot
+    global player_alive_or_dead
 
     text = update.message.text
     user_response = text
@@ -375,6 +530,20 @@ def typed_something_after_question(update, context):
         if(text in players_names):
             update.message.reply_text(text + ' already in players list.')
         else:
+            day_or_night = 0  # 0=not initialized, 1=day, 2=night
+            daynight_num = 0  # 0=not initialized, 1=first day or night, 2=second day or night, ...
+            last_night_message = 'game has not been initialized yet'
+            player_alive_or_dead = []  # 1=alive, 0=dead
+
+            enable_at_night_mafia_kill = False
+            enable_at_night_doctor_heal = False
+            enable_at_night_karagah_ask = False
+            enable_at_night_taktir_shoot = False
+
+            choice_at_night_mafia_kill = ''
+            choice_at_night_doctor_heal = ''
+            choice_at_night_karagah_ask = ''
+            choice_at_night_taktir_shoot = ''
             player_roles= []
             player_roles_as_text = []
             player_roles_are_assigned = False
@@ -399,7 +568,15 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('player status was already: dead')
             else:
                 player_alive_or_dead[dead_user_index]=0;
+    elif (user_command == 'at night mafia kill'):
+        player_to_kill = text
 
+        if not player_to_kill in players_names:
+            update.message.reply_text('player select by mafia was not found in players list.')
+        else: #ok, player exists
+            choice_at_night_mafia_kill = player_to_kill
+            enable_at_night_mafia_kill = False
+            update.message.reply_text('you have now successfully registered your choice for mafia kill: '+player_to_kill)
     elif (user_command == 'set player alive'):
         user_to_set_alive = text
 
@@ -475,6 +652,26 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('done assigning')
 
                 write_status()  # backup status to disk to reload if crash
+
+                if (user_id in players_names):
+                    user_index = players_names.index(user_id)
+                    update.message.reply_text('your role is ' + player_roles_as_text[user_index])
+
+                    # 0 = not assigned yet
+                    # 1 = shahrvand / aadi
+                    # 2 = shahrvand / karagah
+                    # 3 = shahrvand / doctor
+                    # 4 = shahrvand / taktirandaz
+                    # 5 = mafia / aadi
+                    # 6 = mafia / raees mafia
+
+                    if (player_roles[user_index] == 5 or player_roles[user_index] == 6):
+                        update.message.reply_text('your mafia team members are:')
+
+                        for i in range(len(player_roles)):
+                            if (player_roles[i] == 5 or player_roles[i] == 6):
+                                if (not i == user_index):
+                                    update.message.reply_text(players_names[i] + ' --> ' + player_roles_as_text[i])
         except ValueError:
             update.message.reply_text('error parsing your requested mafia num... nothing done.')
     elif (user_command == 'set new khoda'):
@@ -502,7 +699,7 @@ def main():
         entry_points=[CommandHandler('start', start)],
 
         states={
-            CHOOSING: [MessageHandler(Filters.regex('^(/start|set player dead|set player alive|game overall status|open the door to join|close the door to join|first night karagah ask|set new khoda|what is my role|add me to game|remove all players|define new player|list all players|assign roles|what is my role|list all players and roles)$'),
+            CHOOSING: [MessageHandler(Filters.regex('^(/start|from day to night|from night to day|at night mafia kill|at night doctor heal|at night karagah ask|at night taktir shoot|set player dead|set player alive|game overall status|open the door to join|close the door to join|first night karagah ask|set new khoda|what is my role|add me to game|remove all players|define new player|list all players|assign roles|what is my role|list all players and roles)$'),
                                       made_a_choice),
                       ],
 
@@ -530,6 +727,16 @@ def assign_roles():
     global player_alive_or_dead
     global day_or_night
     global daynight_num
+    global enable_at_night_mafia_kill
+    global enable_at_night_doctor_heal
+    global enable_at_night_karagah_ask
+    global enable_at_night_taktir_shoot
+    global last_night_message
+    global choice_at_night_mafia_kill
+    global choice_at_night_doctor_heal
+    global choice_at_night_karagah_ask
+    global choice_at_night_taktir_shoot
+    global player_alive_or_dead
 
     player_roles=[]
     player_roles_as_text=[]
@@ -538,6 +745,15 @@ def assign_roles():
 
     day_or_night=1
     daynight_num=1
+    enable_at_night_mafia_kill = False
+    enable_at_night_doctor_heal = False
+    enable_at_night_karagah_ask = False
+    enable_at_night_taktir_shoot = False
+    last_night_message = 'game has not been initialized yet'
+    choice_at_night_mafia_kill = ''
+    choice_at_night_doctor_heal = ''
+    choice_at_night_karagah_ask = ''
+    choice_at_night_taktir_shoot = ''
 
     num_doctor = 1
     num_karagah = 1
