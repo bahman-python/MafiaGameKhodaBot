@@ -1,7 +1,7 @@
 import warnings
 import telegtoken
-import logging
 import json
+import logging
 import os.path
 import datetime
 import csv
@@ -11,10 +11,10 @@ from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, ConversationHandler)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
 logger = logging.getLogger(__name__)
+
 players_names = ['example_player1_for_testing','example_player2_for_testing','example_player3_for_testing','example_player4_for_testing','example_player5_for_testing','example_player6_for_testing','example_player7_for_testing','example_player8_for_testing','example_player9_for_testing','example_player10_for_testing','example_player11_for_testing','example_player12_for_testing','example_player13_for_testing','example_player14_for_testing','example_player15_for_testing']
-player_roles= []
+player_roles = []
 player_roles_as_text = []
 player_roles_are_assigned = False
 num_mafias = 0
@@ -24,9 +24,10 @@ door_to_join_open = False
 backup_data_loaded = False
 
 #----new variables defined 5 may 2020 ----
-day_or_night=0      #0=not initialized, 1=day, 2=night
-daynight_num=0      #0=not initialized, 1=first day or night, 2=second day or night, ...
-last_night_message='game has not been initialized yet'
+day_or_night = 0      #0=not initialized, 1=day, 2=night
+daynight_num = 0      #0=not initialized, 1=first day or night, 2=second day or night, ...
+last_night_message = 'game has not been initialized yet'
+player_alive_or_dead = []  #1=alive, 0=dead
 #-----------------------------------------
 
 CHOOSING, TYPING_REPLY = range(2)
@@ -35,11 +36,11 @@ reply_keyboard = [['/start','add me to game'],
                   ['game overall status','what is my role'],
                   ['at night mafia kill','at night doctor heal'],
                   ['at night karagah ask','at night taktir shoot'],
+                  ['set new khoda'],
                   ['set player dead','set player alive'],
                   ['from day to night', 'from night to day'],
                   ['open the door to join', 'close the door to join'],
                   ['remove all players', 'define new player'],
-                  ['set new khoda','print debug info'],
                   ['list all players', 'assign roles'],
                   ['list all players and roles']]
 
@@ -65,6 +66,8 @@ def made_a_choice(update, context):
     global player_roles_as_text
     global has_karagah_already_asked
     global door_to_join_open
+    global day_or_night
+    global daynight_num
     next_state = CHOOSING
     text = update.message.text
     user_command = text
@@ -97,47 +100,77 @@ def made_a_choice(update, context):
     elif (user_command == '/start'):
         update.message.reply_text('robot is up and running.')
         next_state = CHOOSING
-    elif (user_command == 'game overall status'):
-        status = ''
-        if(day_or_night==0):
-            update.message.reply_text("game is not initialized yet!")
-        elif(day_or_night==1):
-            status = status + 'day '
-        elif(day_or_night==2):
-            status = status + 'night '
-
-        if(day_or_night!=0):
-            status = status + str(daynight_num)
-            update.message.reply_text('it is currently: '+status)
-
-        if(day_or_night!=0):
-            update.message.reply_text('message from last night:')
-            update.message.reply_text(last_night_message)
-    elif (user_command == 'print debug info'):
-        if is_admin == False:
-            update.message.reply_text('debug info not available...')
-            next_state=CHOOSING
+    elif (user_command == 'set player dead' and is_admin == False):
+        update.message.reply_text('only khoda can do this')
+        next_state = CHOOSING
+    elif (user_command == 'set player dead' and is_admin == True):
+        if player_roles_are_assigned == False:
+            update.message.reply_text('roles are not defined yet. therefore, game is not initialized')
+            next_state = CHOOSING
         else:
-            update.message.reply_text('debug info:')
-            update.message.reply_text('players_names=')
-            update.message.reply_text(players_names)
-            update.message.reply_text('player_roles=')
-            update.message.reply_text(player_roles)
-            update.message.reply_text('player_roles_as_text=')
-            update.message.reply_text(player_roles_as_text)
-            update.message.reply_text('roles_are_assigned=')
-            update.message.reply_text(player_roles_are_assigned)
-            update.message.reply_text('num_mafias=')
-            update.message.reply_text(num_mafias)
-            update.message.reply_text('alternative_khoda=')
-            update.message.reply_text(alternative_khoda)
-            update.message.reply_text('has_karagah_already_asked=')
-            update.message.reply_text(has_karagah_already_asked)
-            update.message.reply_text('door_to_join_open=')
-            update.message.reply_text(door_to_join_open)
+            update.message.reply_text('all players in game:')
 
+            for i in range(len(players_names)):
+                current_player = players_names[i]
+                if (player_roles_are_assigned == True):
+                    if player_alive_or_dead[i] == 1:
+                        current_alive_or_dead = 'alive'
+                    elif player_alive_or_dead[i] == 0:
+                        current_alive_or_dead = 'dead'
+                    else:
+                        current_alive_or_dead = 'error?'
+                else:
+                    current_alive_or_dead = 'not initialized yet'
 
-            next_state=CHOOSING
+                print_pair = [current_player, current_alive_or_dead]
+                update.message.reply_text(print_pair)
+
+            update.message.reply_text('------')
+            update.message.reply_text('please select the player you wish to set as dead:')
+
+            next_state = TYPING_REPLY
+    elif (user_command == 'set player alive'):
+        if player_roles_are_assigned == False:
+            update.message.reply_text('roles are not defined yet. therefore, game is not initialized')
+            next_state = CHOOSING
+
+    elif (user_command == 'game overall status'):
+        update.message.reply_text('all players in game:')
+
+        for i in range(len(players_names)):
+            current_player = players_names[i]
+            if(player_roles_are_assigned==True):
+                if player_alive_or_dead[i]==1:
+                    current_alive_or_dead = 'alive'
+                elif player_alive_or_dead[i]==0:
+                    current_alive_or_dead = 'dead'
+                else:
+                    current_alive_or_dead = 'error?'
+            else:
+                current_alive_or_dead = 'not initialized yet'
+            print_pair = [current_player, current_alive_or_dead]
+            update.message.reply_text(print_pair)
+        if player_roles_are_assigned == True:
+            update.message.reply_text('------')
+
+            status = ''
+            if(day_or_night==0):
+                update.message.reply_text("game is not initialized yet!")
+            elif(day_or_night==1):
+                status = status + 'day '
+            elif(day_or_night==2):
+                status = status + 'night '
+
+            if(day_or_night!=0):
+                status = status + str(daynight_num)
+                update.message.reply_text('it is currently: '+status)
+
+            if(day_or_night!=0 and daynight_num >= 2):
+                update.message.reply_text('message from last night:')
+                update.message.reply_text(last_night_message)
+
+        next_state = CHOOSING
+
     elif (user_command == 'open the door to join'):
         if is_admin == True:
             door_to_join_open = True
@@ -295,7 +328,16 @@ def made_a_choice(update, context):
     return next_state
 
 def typed_something_after_question(update, context):
-    global players_names, num_mafias, alternative_khoda, has_karagah_already_asked, door_to_join_open, player_roles, player_roles_as_text
+    global players_names
+    global num_mafias
+    global alternative_khoda
+    global has_karagah_already_asked
+    global door_to_join_open
+    global player_roles
+    global player_roles_as_text
+    global day_or_night
+    global daynight_num
+
     text = update.message.text
     user_response = text
     user_command = context.user_data['user_command']
@@ -316,6 +358,20 @@ def typed_something_after_question(update, context):
             update.message.reply_text('done adding ' + text)
 
             write_status()  # backup status to disk to reload if crash
+    elif (user_command == 'set player dead'):
+        user_to_set_dead = text
+
+        if(not user_to_set_dead in players_names):
+            update.message.reply_text('i could not find the player name')
+        else:
+            update.message.reply_text('setting dead: '+user_to_set_dead)
+
+            dead_user_index = players_names.index(user_to_set_dead)
+
+            if(player_alive_or_dead[dead_user_index] == 0):
+                update.message.reply_text('player status was already: dead')
+            else:
+                player_alive_or_dead[dead_user_index]=0;
     elif (user_command == 'first night karagah ask'):
         user_to_ask = text
 
@@ -394,9 +450,6 @@ def done(update, context):
     update.message.reply_text('good bye. robot stopped now... use /start again to start robot again')
     return ConversationHandler.END
 
-def error(update, context):
-    logger.warning('Update %s caused error %s', update, context.error)
-
 def main():
     warnings.simplefilter('error')
     updater = Updater(telegtoken.get_telegram_token(), use_context=True)
@@ -406,7 +459,7 @@ def main():
         entry_points=[CommandHandler('start', start)],
 
         states={
-            CHOOSING: [MessageHandler(Filters.regex('^(/start|game overall status|print debug info|open the door to join|close the door to join|first night karagah ask|set new khoda|what is my role|add me to game|remove all players|define new player|list all players|assign roles|what is my role|list all players and roles)$'),
+            CHOOSING: [MessageHandler(Filters.regex('^(/start|set player dead|set player alive|game overall status|open the door to join|close the door to join|first night karagah ask|set new khoda|what is my role|add me to game|remove all players|define new player|list all players|assign roles|what is my role|list all players and roles)$'),
                                       made_a_choice),
                       ],
 
@@ -417,9 +470,8 @@ def main():
         fallbacks=[MessageHandler(Filters.regex('^neverhappening'), done)]
     )
 
-    dp.add_handler(conv_handler)
-
     dp.add_error_handler(error)
+    dp.add_handler(conv_handler)
 
     updater.start_polling()
 
@@ -432,11 +484,17 @@ def assign_roles():
     global player_roles_as_text
     global player_roles_are_assigned
     global has_karagah_already_asked
+    global player_alive_or_dead
+    global day_or_night
+    global daynight_num
 
     player_roles=[]
     player_roles_as_text=[]
     alternative_khoda = 'nobody... oh nobody...'
     has_karagah_already_asked = True
+
+    day_or_night=1
+    daynight_num=1
 
     num_doctor = 1
     num_karagah = 1
@@ -445,6 +503,7 @@ def assign_roles():
 
     num_players = len(players_names)
     player_roles= [0] * num_players
+    player_alive_or_dead = [1] * num_players
 
     # 0 = not assigned yet
     # 1 = shahrvand / aadi
@@ -548,6 +607,10 @@ def write_status():
 def read_status():
     global players_names, player_roles, player_roles_as_text, player_roles_are_assigned
     global num_mafias, alternative_khoda, has_karagah_already_asked, door_to_join_open
+
+def error(update, context):
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    logger.warning('Update %s caused error %s', update, context.error)
 
 if __name__ == '__main__':
     main()
