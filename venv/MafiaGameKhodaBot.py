@@ -53,7 +53,7 @@ def start(update, context):
     if backup_data_loaded == False:
         read_status()
         backup_data_loaded = True
-        update.message.reply_text('OBS! Backup is being restored!!!')
+        #update.message.reply_text('OBS! Backup is being restored!!!')
 
     update.message.reply_text(
         "hello. robots has just started now!!! please select your command:",
@@ -559,86 +559,86 @@ def write_status():
     global players, roles, roles_text, roles_are_assigned
     global num_mafias, after1stnight_khoda, did_karagah_ask_first_time, door_to_join_open
 
-    now = datetime.datetime.now()
-    timestr = now.strftime("%Y%m%d-%H%M%S status backup.txt")
-    save_file = open("textfiles/"+timestr, 'a')
-    save_file.write("----starts here: " + timestr + " ----\n")
+    #now = datetime.datetime.now()
+    #timestr = now.strftime("%Y%m%d-%H%M%S status backup.txt")
+    #save_file = open("textfiles/"+timestr, 'a')
+    #save_file.write("----starts here: " + timestr + " ----\n")
 
-    save_file.write("<players>\n")
-    save_file.write(json.dumps(players))
-    save_file.write("\n")
+    #save_file.write("<players>\n")
+    #save_file.write(json.dumps(players))
+    #save_file.write("\n")
 
-    save_file.write("\n<roles>\n")
-    save_file.write(json.dumps(roles))
-    save_file.write("\n")
+    #save_file.write("\n<roles>\n")
+    #save_file.write(json.dumps(roles))
+    #save_file.write("\n")
 
-    save_file.write("\n<roles_text>\n")
-    save_file.write(json.dumps(roles_text))
-    save_file.write("\n")
+    #save_file.write("\n<roles_text>\n")
+    #save_file.write(json.dumps(roles_text))
+    #save_file.write("\n")
 
-    save_file.write("\n<roles_are_assigned>\n")
-    save_file.write(json.dumps(roles_are_assigned))
-    save_file.write("\n")
+    #save_file.write("\n<roles_are_assigned>\n")
+    #save_file.write(json.dumps(roles_are_assigned))
+    #save_file.write("\n")
 
-    save_file.write("\n<num_mafias>\n")
-    save_file.write(json.dumps(num_mafias))
-    save_file.write("\n")
+    #save_file.write("\n<num_mafias>\n")
+    #save_file.write(json.dumps(num_mafias))
+    #save_file.write("\n")
 
-    save_file.write("\n<after1stnight_khoda>\n")
-    save_file.write(json.dumps(after1stnight_khoda))
-    save_file.write("\n")
+    #save_file.write("\n<after1stnight_khoda>\n")
+    #save_file.write(json.dumps(after1stnight_khoda))
+    #save_file.write("\n")
 
-    save_file.write("\n<did_karagah_ask_first_time>\n")
-    save_file.write(json.dumps(did_karagah_ask_first_time))
-    save_file.write("\n")
+    #save_file.write("\n<did_karagah_ask_first_time>\n")
+    #save_file.write(json.dumps(did_karagah_ask_first_time))
+    #save_file.write("\n")
 
-    save_file.write("\n<door_to_join_open>\n")
-    save_file.write(json.dumps(door_to_join_open))
-    save_file.write("\n")
+    #save_file.write("\n<door_to_join_open>\n")
+    #save_file.write(json.dumps(door_to_join_open))
+    #save_file.write("\n")
 
-    save_file.write("----ends here: " + timestr + " ----")
-    save_file.close()
+    #save_file.write("----ends here: " + timestr + " ----")
+    #save_file.close()
 
-    print("status backed up to file "+timestr+" for recovery if crash happens")
+    #print("status backed up to file "+timestr+" for recovery if crash happens")
 
-    save_lastvalidbackup = open("textfiles/last_valid_backup.txt", 'w')
-    save_lastvalidbackup.write(timestr)
-    save_lastvalidbackup.close()
+    #save_lastvalidbackup = open("textfiles/last_valid_backup.txt", 'w')
+    #save_lastvalidbackup.write(timestr)
+    #save_lastvalidbackup.close()
 
 def read_status():
     global players, roles, roles_text, roles_are_assigned
     global num_mafias, after1stnight_khoda, did_karagah_ask_first_time, door_to_join_open
 
-    if(os.path.exists("textfiles/last_valid_backup.txt")):
-        print("reading last_valid_backup.txt...")
+    #if(os.path.exists("textfiles/last_valid_backup.txt")):
+    #    print("reading last_valid_backup.txt...")
 
-        read_file = open("textfiles/last_valid_backup.txt",'r')
+    #    read_file = open("textfiles/last_valid_backup.txt",'r')
 
-        lastvalidbackup_filename = read_file.readline()
-        read_file.close()
+    #    lastvalidbackup_filename = read_file.readline()
+    #    read_file.close()
 
-        print("it is pointing to "+lastvalidbackup_filename+" as last valid backup!")
+    #    print("it is pointing to "+lastvalidbackup_filename+" as last valid backup!")
 
-        if(os.path.exists("textfiles/"+lastvalidbackup_filename)):
-            print("reading "+lastvalidbackup_filename)
+    #    if(os.path.exists("textfiles/"+lastvalidbackup_filename)):
+    #        print("reading "+lastvalidbackup_filename)
 
-            read_backup_file = open("textfiles/"+lastvalidbackup_filename,'r')
-            backup_file_contents = read_backup_file.readlines()
-            read_backup_file.close()
+    #        read_backup_file = open("textfiles/"+lastvalidbackup_filename,'r')
+    #        backup_file_contents = read_backup_file.readlines()
+    #        read_backup_file.close()
 
-            if(len(backup_file_contents) != 25):
-                print("invalid length of backup file! skipping")
-            else:
-                print("length of backup file ok. reading in...")
+    #        if(len(backup_file_contents) != 25):
+    #            print("invalid length of backup file! skipping")
+    #        else:
+    #            print("length of backup file ok. reading in...")
 
-                players_input = backup_file_contents[2].rstrip("\n")
-                roles_input = backup_file_contents[5].rstrip("\n")
-                roles_text_input = backup_file_contents[8].rstrip("\n")
-                roles_are_assigned_input = backup_file_contents[11].rstrip("\n")
-                num_mafias_input = backup_file_contents[14].rstrip("\n")
-                after1stnight_khoda_input = backup_file_contents[17].rstrip("\n")
-                did_karagah_ask_first_time_input = backup_file_contents[20].rstrip("\n")
-                door_to_join_open_input = backup_file_contents[23].rstrip("\n")
+    #            players_input = backup_file_contents[2].rstrip("\n")
+    #            roles_input = backup_file_contents[5].rstrip("\n")
+    #            roles_text_input = backup_file_contents[8].rstrip("\n")
+    #            roles_are_assigned_input = backup_file_contents[11].rstrip("\n")
+    #            num_mafias_input = backup_file_contents[14].rstrip("\n")
+    #            after1stnight_khoda_input = backup_file_contents[17].rstrip("\n")
+    #            did_karagah_ask_first_time_input = backup_file_contents[20].rstrip("\n")
+    #            door_to_join_open_input = backup_file_contents[23].rstrip("\n")
 
                 #print("players_input: "+players_input)
                 #print("roles_input: "+roles_input)
@@ -650,57 +650,57 @@ def read_status():
                 #print("door_to_join_open_input: "+door_to_join_open_input)
                 #print("now parsing")
 
-                players_input = players_input.replace('[','').replace(']','').replace(', ',',').replace('"','')
-                players_input_parsed = players_input.split(',')
-                if players_input_parsed == ['']:
-                    players=[]
-                else:
-                    players = players_input_parsed
+    #            players_input = players_input.replace('[','').replace(']','').replace(', ',',').replace('"','')
+    #            players_input_parsed = players_input.split(',')
+    #            if players_input_parsed == ['']:
+    #                players=[]
+    #            else:
+    #                players = players_input_parsed
 
-                roles_input = roles_input.replace('[', '').replace(']', '').replace(', ', ',').replace('"', '')
-                roles_input_parsed = roles_input.split(',')
-                if roles_input_parsed ==['']:
-                    roles=[]
-                else:
-                    roles = roles_input_parsed
+    #            roles_input = roles_input.replace('[', '').replace(']', '').replace(', ', ',').replace('"', '')
+    #            roles_input_parsed = roles_input.split(',')
+    #            if roles_input_parsed ==['']:
+    #                roles=[]
+    #            else:
+    #                roles = roles_input_parsed
 
-                for i in range(len(roles)):
-                    if roles[i] != '':
-                      roles[i] = int(roles[i])
+    #            for i in range(len(roles)):
+    #                if roles[i] != '':
+    #                  roles[i] = int(roles[i])
 
-                roles_text_input = roles_text_input.replace('[', '').replace(']', '').replace(', ', ',').replace('"', '')
-                roles_text_input_parsed = roles_text_input.split(',')
-                if roles_text_input_parsed ==['']:
-                    roles_text=[]
-                else:
-                    roles_text = roles_text_input_parsed
+    #            roles_text_input = roles_text_input.replace('[', '').replace(']', '').replace(', ', ',').replace('"', '')
+    #            roles_text_input_parsed = roles_text_input.split(',')
+    #            if roles_text_input_parsed ==['']:
+    #                roles_text=[]
+    #            else:
+    #                roles_text = roles_text_input_parsed
 
-                if(roles_are_assigned_input.lower()=='true'):
-                    roles_are_assigned = True
-                else:
-                    roles_are_assigned = False
+    #            if(roles_are_assigned_input.lower()=='true'):
+    #                roles_are_assigned = True
+    #            else:
+    #                roles_are_assigned = False
 
-                num_mafias = int(num_mafias_input)
+    #            num_mafias = int(num_mafias_input)
 
-                after1stnight_khoda = after1stnight_khoda_input.replace('"','')
+    #            after1stnight_khoda = after1stnight_khoda_input.replace('"','')
 
-                if(did_karagah_ask_first_time_input.lower()=='true'):
-                    did_karagah_ask_first_time = True
-                else:
-                    did_karagah_ask_first_time = False
+    #            if(did_karagah_ask_first_time_input.lower()=='true'):
+    #                did_karagah_ask_first_time = True
+    #            else:
+    #                did_karagah_ask_first_time = False
 
-                if(door_to_join_open_input.lower()=='true'):
-                    door_to_join_open = True
-                else:
-                    door_to_join_open = False
-        else:
-            print(lastvalidbackup_filename+" did not exist! :-(")
-            print("skipped reloading from backup...")
+    #            if(door_to_join_open_input.lower()=='true'):
+    #                door_to_join_open = True
+    #            else:
+    #                door_to_join_open = False
+    #    else:
+    #        print(lastvalidbackup_filename+" did not exist! :-(")
+    #        print("skipped reloading from backup...")
 
-            os.remove("textfiles/last_valid_backup.txt")
-            print("removed last_valid_backup.txt due to pointing to non-existing file")
-    else:
-        print("last_valid_backup.txt does not exist... skipped loading!")
+    #        os.remove("textfiles/last_valid_backup.txt")
+    #        print("removed last_valid_backup.txt due to pointing to non-existing file")
+    #else:
+    #    print("last_valid_backup.txt does not exist... skipped loading!")
 
 if __name__ == '__main__':
     main()
