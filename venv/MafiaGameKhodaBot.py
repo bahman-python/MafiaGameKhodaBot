@@ -101,7 +101,7 @@ def made_a_choice(update, context):
         update.message.reply_text('robot is up and running.')
         next_state = CHOOSING
     elif (user_command == 'set player dead' and is_admin == False):
-        update.message.reply_text('only khoda can do this')
+        update.message.reply_text('only khoda can do this - set player dead')
         next_state = CHOOSING
     elif (user_command == 'set player dead' and is_admin == True):
         if player_roles_are_assigned == False:
@@ -129,10 +129,37 @@ def made_a_choice(update, context):
             update.message.reply_text('please select the player you wish to set as dead:')
 
             next_state = TYPING_REPLY
-    elif (user_command == 'set player alive'):
+
+    elif (user_command == 'set player alive' and is_admin == False):
+        update.message.reply_text('only khoda can do this - set player alive')
+        next_state = CHOOSING
+    elif (user_command == 'set player alive' and is_admin == True):
         if player_roles_are_assigned == False:
             update.message.reply_text('roles are not defined yet. therefore, game is not initialized')
             next_state = CHOOSING
+        else:
+            update.message.reply_text('all players in game:')
+
+            for i in range(len(players_names)):
+                current_player = players_names[i]
+                if (player_roles_are_assigned == True):
+                    if player_alive_or_dead[i] == 1:
+                        current_alive_or_dead = 'alive'
+                    elif player_alive_or_dead[i] == 0:
+                        current_alive_or_dead = 'dead'
+                    else:
+                        current_alive_or_dead = 'error?'
+                else:
+                    current_alive_or_dead = 'not initialized yet'
+
+                print_pair = [current_player, current_alive_or_dead]
+                update.message.reply_text(print_pair)
+
+            update.message.reply_text('------')
+            update.message.reply_text('please select the player you wish to set as alive:')
+
+            next_state = TYPING_REPLY
+
 
     elif (user_command == 'game overall status'):
         update.message.reply_text('all players in game:')
@@ -372,6 +399,22 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('player status was already: dead')
             else:
                 player_alive_or_dead[dead_user_index]=0;
+
+    elif (user_command == 'set player alive'):
+        user_to_set_alive = text
+
+        if(not user_to_set_alive in players_names):
+            update.message.reply_text('i could not find the player name')
+        else:
+            update.message.reply_text('setting alive: '+user_to_set_alive)
+
+            alive_user_index = players_names.index(user_to_set_alive)
+
+            if(player_alive_or_dead[alive_user_index] == 1):
+                update.message.reply_text('player status was already: alive')
+            else:
+                player_alive_or_dead[alive_user_index]=1;
+
     elif (user_command == 'first night karagah ask'):
         user_to_ask = text
 
