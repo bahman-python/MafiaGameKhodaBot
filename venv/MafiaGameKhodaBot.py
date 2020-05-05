@@ -214,8 +214,47 @@ def made_a_choice(update, context):
         next_state = CHOOSING
     #-----------------------------------------------------------------
     elif (user_command == 'at night taktir shoot'):
-        update.message.reply_text('todo')
+        # 0 = not assigned yet
+        # 1 = shahrvand / aadi
+        # 2 = shahrvand / karagah
+        # 3 = shahrvand / doctor
+        # 4 = shahrvand / taktirandaz
+        # 5 = mafia / aadi
+        # 6 = mafia / raees mafia
         next_state = CHOOSING
+
+        if day_or_night != 2:
+            update.message.reply_text('this action can be used only at night.')
+        else:  # -- ok, it is night
+            if user_id in players_names:
+                if player_alive_or_dead[players_names.index(user_id)] == 0:
+                    update.message.reply_text('you are dead in the game')
+                else:  # -- ok, user is alive
+                    if player_roles[players_names.index(user_id)] != 4:
+                        update.message.reply_text('this option is only for taktirandaz.')
+                    else:  # -- ok, user is taktir
+                        if enable_at_night_taktir_shoot == False:
+                            update.message.reply_text('this option can be used only once per night.')
+                        else:  # -- ok, everything ready
+                            update.message.reply_text('all players in game:')
+
+                            for i in range(len(players_names)):
+                                current_player = players_names[i]
+                                if player_alive_or_dead[i] == 1:
+                                    current_alive_or_dead = 'alive'
+                                elif player_alive_or_dead[i] == 0:
+                                    current_alive_or_dead = 'dead'
+                                else:
+                                    current_alive_or_dead = 'error?'
+
+                                print_pair = [current_player, current_alive_or_dead]
+                                update.message.reply_text(print_pair)
+
+                            update.message.reply_text('------')
+                            update.message.reply_text('taktir shoot at night, which player do you select:')
+                            next_state = TYPING_REPLY
+            else:
+                update.message.reply_text('i could not find your name in players list :-( are you in the game?')
     #-----------------------------------------------------------------
     elif (user_command == '/start'):
         update.message.reply_text('robot is up and running.')
@@ -387,44 +426,6 @@ def made_a_choice(update, context):
         else:
             update.message.reply_text('only admin can close the door')
             next_state = CHOOSING
-    elif (user_command == 'first night karagah ask'):
-        if(player_roles_are_assigned == True):
-            if (user_id in players_names):
-                index = players_names.index(user_id)
-                player_role = player_roles[index]
-
-                # 0 = not assigned yet
-                # 1 = shahrvand / aadi
-                # 2 = shahrvand / karagah
-                # 3 = shahrvand / doctor
-                # 4 = shahrvand / taktirandaz
-                # 5 = mafia / aadi
-                # 6 = mafia / raees mafia
-
-                if(player_role == 2):
-                    if(has_karagah_already_asked == False):
-                        update.message.reply_text('ok, now listing all players:')
-                        update.message.reply_text(players_names)
-
-                        update.message.reply_text('please write the name of person you want to ask:')
-
-                        next_state = TYPING_REPLY
-                    else:
-                        update.message.reply_text('you have already asked once. ;-) only once is allowed')
-                        next_state = CHOOSING
-
-                else:
-                    update.message.reply_text('you are not karagah. only karagah can ask')
-                    next_state = CHOOSING
-
-            else:
-                update.message.reply_text('you are not in players list.')
-                next_state = CHOOSING
-        else:
-            update.message.reply_text('roles are not assigned yet. you are not karagah')
-            next_state = CHOOSING
-
-
     elif (user_command == 'set new khoda'):
         if(is_admin == True):
             update.message.reply_text('ok, now listing all players:')
@@ -605,6 +606,15 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('player status was already: dead')
             else:
                 player_alive_or_dead[dead_user_index]=0;
+    elif (user_command == 'at night taktir shoot'):
+        player_to_shoot = text
+
+        if not player_to_shoot in players_names:
+            update.message.reply_text('player select by taktirandaz was not found in players list.')
+        else: #ok, player exists
+            choice_at_night_taktir_shoot = player_to_shoot
+            enable_at_night_taktir_shoot = False
+            update.message.reply_text('you have now successfully registered your choice for taktirandaz shoot: '+player_to_shoot)
     elif (user_command == 'at night mafia kill'):
         player_to_kill = text
 
