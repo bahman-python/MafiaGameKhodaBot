@@ -105,6 +105,7 @@ def made_a_choice(update, context):
     if (user_id == '@bahman_canon'):
         is_admin = True
 
+    #-----------------------------------------------------------------
     if(user_command == 'remove all players'):
         if(is_admin == True):
             if(door_to_join_open == True):
@@ -255,6 +256,7 @@ def made_a_choice(update, context):
                             next_state = TYPING_REPLY
             else:
                 update.message.reply_text('i could not find your name in players list :-( are you in the game?')    #-----------------------------------------------------------------
+    #-----------------------------------------------------------------
     elif (user_command == 'at night taktir shoot'):
         # 0 = not assigned yet
         # 1 = shahrvand / aadi
@@ -293,7 +295,7 @@ def made_a_choice(update, context):
                                 update.message.reply_text(print_pair)
 
                             update.message.reply_text('------')
-                            update.message.reply_text('taktir shoot at night, which player do you select:')
+                            update.message.reply_text('taktir shoot at night, which player do you select: (for not shooting, write \'nobody\' without any quotation mark, i mean write  nobody   !')
                             next_state = TYPING_REPLY
             else:
                 update.message.reply_text('i could not find your name in players list :-( are you in the game?')
@@ -303,9 +305,17 @@ def made_a_choice(update, context):
         next_state = CHOOSING
     #-----------------------------------------------------------------
     elif user_command == 'from day to night' and is_admin == False and user_id != alternative_khoda:
-        update.message.reply_text('only khoda can do this.')
+        update.message.reply_text('only khoda can do this. - set from day to night')
         next_state = CHOOSING
     #-----------------------------------------------------------------
+    elif user_command == 'from night to day' and is_admin == False and user_id != alternative_khoda:
+        update.message.reply_text('only khoda can do this. - set from night to day')
+        next_state = CHOOSING
+    #-----------------------------------------------------------------
+    elif user_command == 'from night to day' and (is_admin == True or user_id == alternative_khoda):
+        update.message.reply_text('todo')
+        next_state = CHOOSING
+    # -----------------------------------------------------------------
     elif user_command == 'from day to night' and (is_admin == True or user_id == alternative_khoda):
         if day_or_night != 1:
             update.message.reply_text('the option should be used in day')
@@ -316,14 +326,10 @@ def made_a_choice(update, context):
             enable_at_night_karagah_ask = True
             enable_at_night_taktir_shoot = True
 
-            # OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS!
-            # OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS!
-            #if daynight_num == 1:
-            #    enable_at_night_mafia_kill = False
-            #    enable_at_night_doctor_heal = False
-            #    enable_at_night_taktir_shoot = False
-            # OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS!
-            # OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS!
+            if daynight_num == 1:
+                enable_at_night_mafia_kill = False
+                enable_at_night_doctor_heal = False
+                enable_at_night_taktir_shoot = False
 
             # 0 = not assigned yet
             # 1 = shahrvand / aadi
@@ -353,6 +359,7 @@ def made_a_choice(update, context):
     elif (user_command == 'set player dead' and is_admin == False and user_id != alternative_khoda):
         update.message.reply_text('only khoda can do this - set player dead')
         next_state = CHOOSING
+    #-----------------------------------------------------------------
     elif (user_command == 'set player dead' and (is_admin == True or user_id == alternative_khoda)):
         if player_roles_are_assigned == False:
             update.message.reply_text('roles are not defined yet. therefore, game is not initialized')
@@ -379,10 +386,11 @@ def made_a_choice(update, context):
             update.message.reply_text('please select the player you wish to set as dead:')
 
             next_state = TYPING_REPLY
-
+    #-----------------------------------------------------------------
     elif (user_command == 'set player alive' and is_admin == False and user_id != alternative_khoda):
         update.message.reply_text('only khoda can do this - set player alive')
         next_state = CHOOSING
+    # -----------------------------------------------------------------
     elif (user_command == 'set player alive' and (is_admin == True or user_id == alternative_khoda)):
         if player_roles_are_assigned == False:
             update.message.reply_text('roles are not defined yet. therefore, game is not initialized')
@@ -409,8 +417,7 @@ def made_a_choice(update, context):
             update.message.reply_text('please select the player you wish to set as alive:')
 
             next_state = TYPING_REPLY
-
-
+    #-----------------------------------------------------------------
     elif (user_command == 'game overall status'):
         update.message.reply_text('all players in game:')
 
@@ -447,7 +454,7 @@ def made_a_choice(update, context):
                 update.message.reply_text(last_night_message)
 
         next_state = CHOOSING
-
+    #-----------------------------------------------------------------
     elif (user_command == 'open the door to join'):
         if is_admin == True:
             door_to_join_open = True
@@ -458,6 +465,7 @@ def made_a_choice(update, context):
         else:
             update.message.reply_text('only admin can open the door')
             next_state = CHOOSING
+    #-----------------------------------------------------------------
     elif (user_command == 'close the door to join'):
         if is_admin == True:
             door_to_join_open = False
@@ -468,6 +476,7 @@ def made_a_choice(update, context):
         else:
             update.message.reply_text('only admin can close the door')
             next_state = CHOOSING
+    #-----------------------------------------------------------------
     elif (user_command == 'set new khoda'):
         if(is_admin == True):
             update.message.reply_text('ok, now listing all players:')
@@ -479,6 +488,7 @@ def made_a_choice(update, context):
             next_state = TYPING_REPLY
         else:
             update.message.reply_text('only admin can set new khoda')
+    #-----------------------------------------------------------------
     elif(user_command == 'define new player'):
         if(is_admin == True):
             if(door_to_join_open == True):
@@ -488,10 +498,12 @@ def made_a_choice(update, context):
                 update.message.reply_text('the door to join should be OPEN in order to define new player')
         else:
             update.message.reply_text('only admin can define new players...')
+    #-----------------------------------------------------------------
     elif(user_command == 'list all players'):
         update.message.reply_text('ok, now listing all players:')
         update.message.reply_text(players_names)
         next_state = CHOOSING
+    #-----------------------------------------------------------------
     elif(user_command == 'what is my role'):
         if(player_roles_are_assigned == True):
             if(user_id in players_names):
@@ -518,6 +530,7 @@ def made_a_choice(update, context):
         else:
             update.message.reply_text('roles are not assigned yet.')
         next_state = CHOOSING
+    #-----------------------------------------------------------------
     elif(user_command == 'list all players and roles'):
         if(player_roles_are_assigned == True):
             if (is_admin == True or user_id == alternative_khoda):
@@ -539,6 +552,7 @@ def made_a_choice(update, context):
         else:
             update.message.reply_text('roles are not assigned at this moment...')
             next_state = CHOOSING
+    #-----------------------------------------------------------------
     elif(user_command == 'assign roles'):
         if(is_admin == True):
             if(door_to_join_open == False):
@@ -548,10 +562,10 @@ def made_a_choice(update, context):
                 update.message.reply_text('door to join must be CLOSED in order to initiate random role assignment')
         else:
             update.message.reply_text('only admin can initiate random role assignment.')
+    # -----------------------------------------------------------------
     elif(user_command=='add me to game'):
         if user_id in players_names:
             update.message.reply_text('you are already in the game: '+user_id)
-
         else:
             if(door_to_join_open == True):
                 players_names = players_names + [user_id]
@@ -581,6 +595,7 @@ def made_a_choice(update, context):
                 write_status()  # backup status to disk to reload if crash
             else:
                 update.message.reply_text('the door to join is closed at the moment... please ask khoda to open the door.')
+    #-----------------------------------------------------------------
 
     update.message.reply_text('----------------------------------------',reply_markup=markup)
     return next_state
@@ -612,7 +627,7 @@ def typed_something_after_question(update, context):
     user_command = context.user_data['user_command']
     user_id = update.message.from_user.name
 
-
+    #-----------------------------------------------------------------
     if(user_command=='define new player'):
         if(text in players_names):
             update.message.reply_text(text + ' already in players list.')
@@ -641,6 +656,7 @@ def typed_something_after_question(update, context):
             update.message.reply_text('done adding ' + text)
 
             write_status()  # backup status to disk to reload if crash
+    #-----------------------------------------------------------------
     elif (user_command == 'set player dead'):
         user_to_set_dead = text
 
@@ -655,15 +671,17 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('player status was already: dead')
             else:
                 player_alive_or_dead[dead_user_index]=0;
+    #-----------------------------------------------------------------
     elif (user_command == 'at night taktir shoot'):
         player_to_shoot = text
 
-        if not player_to_shoot in players_names:
+        if (not player_to_shoot in players_names) and player_to_shoot != 'nobody':
             update.message.reply_text('player select by taktirandaz was not found in players list.')
         else: #ok, player exists
             choice_at_night_taktir_shoot = player_to_shoot
             enable_at_night_taktir_shoot = False
             update.message.reply_text('you have now successfully registered your choice for taktirandaz shoot: '+player_to_shoot)
+    #-----------------------------------------------------------------
     elif (user_command == 'at night karagah ask'):
         player_to_ask = text
 
@@ -693,7 +711,7 @@ def typed_something_after_question(update, context):
 
             else:
                 update.message.reply_text('the player you are asking is dead.')
-
+    #-----------------------------------------------------------------
     elif (user_command == 'at night mafia kill'):
         player_to_kill = text
 
@@ -703,6 +721,7 @@ def typed_something_after_question(update, context):
             choice_at_night_mafia_kill = player_to_kill
             enable_at_night_mafia_kill = False
             update.message.reply_text('you have now successfully registered your choice for mafia kill: '+player_to_kill)
+    #-----------------------------------------------------------------
     elif (user_command == 'at night doctor heal'):
         player_to_heal = text
 
@@ -738,7 +757,7 @@ def typed_something_after_question(update, context):
                     choice_at_night_doctor_heal = player_to_heal
                     enable_at_night_doctor_heal = False
                     update.message.reply_text('you have now successfully registered your choices for doctor: ' + player_to_heal)
-
+    #-----------------------------------------------------------------
     elif (user_command == 'set player alive'):
         user_to_set_alive = text
 
@@ -753,8 +772,7 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('player status was already: alive')
             else:
                 player_alive_or_dead[alive_user_index]=1;
-
-
+    #-----------------------------------------------------------------
     elif(user_command=='assign roles'):
         try:
             num_mafias = int(text)
@@ -794,6 +812,7 @@ def typed_something_after_question(update, context):
                                     update.message.reply_text(players_names[i] + ' --> ' + player_roles_as_text[i])
         except ValueError:
             update.message.reply_text('error parsing your requested mafia num... nothing done.')
+    #-----------------------------------------------------------------
     elif (user_command == 'set new khoda'):
         new_khoda_candidate = text
         if not new_khoda_candidate in players_names:
@@ -802,6 +821,8 @@ def typed_something_after_question(update, context):
             alternative_khoda = new_khoda_candidate
             update.message.reply_text('ok, now '+new_khoda_candidate+' is set as khoda. he/she can read all players roles.')
             write_status()
+    #-----------------------------------------------------------------
+
     update.message.reply_text('...', reply_markup=markup)
 
     return CHOOSING
