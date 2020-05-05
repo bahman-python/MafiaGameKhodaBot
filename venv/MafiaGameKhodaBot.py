@@ -202,10 +202,14 @@ def made_a_choice(update, context):
             enable_at_night_karagah_ask = True
             enable_at_night_taktir_shoot = True
 
-            if daynight_num == 1:
-                enable_at_night_mafia_kill = False
-                enable_at_night_doctor_heal = False
-                enable_at_night_taktir_shoot = False
+            # OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS!
+            # OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS!
+            #if daynight_num == 1:
+            #    enable_at_night_mafia_kill = False
+            #    enable_at_night_doctor_heal = False
+            #    enable_at_night_taktir_shoot = False
+            # OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS!
+            # OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS! OBS!
 
             # 0 = not assigned yet
             # 1 = shahrvand / aadi
