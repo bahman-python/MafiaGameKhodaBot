@@ -313,7 +313,76 @@ def made_a_choice(update, context):
         next_state = CHOOSING
     #-----------------------------------------------------------------
     elif user_command == 'from night to day' and (is_admin == True or user_id == alternative_khoda):
-        update.message.reply_text('todo')
+        if day_or_night != 2:
+            update.message.reply_text('the option should be used in night')
+        else: #-- ok, it is day
+            everything_ready = True
+
+            if enable_at_night_karagah_ask == True:
+                everything_ready = False
+                update.message.reply_text('karagah has not asked yet.')
+
+            if enable_at_night_taktir_shoot == True:
+                everything_ready = False
+                update.message.reply_text('taktirandaz has not shot yet.')
+
+            if enable_at_night_doctor_heal == True:
+                everything_ready = False
+                update.message.reply_text('doctor has not healed yet.')
+
+            if enable_at_night_mafia_kill == True:
+                everything_ready = False
+                update.message.reply_text('mafia has not killed yet.')
+
+            if everything_ready == True:
+                update.message.reply_text('going from night to day... sun is going up')
+
+                # 0 = not assigned yet
+                # 1 = shahrvand / aadi
+                # 2 = shahrvand / karagah
+                # 3 = shahrvand / doctor
+                # 4 = shahrvand / taktirandaz
+                # 5 = mafia / aadi
+                # 6 = mafia / raees mafia
+
+
+                # --- process the night events ---
+                # who did the doctor heal?
+                if (player_alive_or_dead[player_roles.index(3)]==0): #doctor is dead
+                    doctor_healed = []
+                else: #doctor is alive
+                    if doctor_heal_2_first_2_nights == False or daynight_num >= 4: #doctor has healed only one player
+                        doctor_healed = [choice_at_night_doctor_heal]
+                    else: # doctor has healed two players
+                        player1_healed = choice_at_night_doctor_heal[0:choice_at_night_doctor_heal.find(' ')]
+                        player2_healed = choice_at_night_doctor_heal[(choice_at_night_doctor_heal.find(' ') + 1):]
+                        doctor_healed = [player1_healed, player2_healed]
+                #doctor_healed is a list of everyone that doctor healed
+
+                #who died?
+                if (choice_at_night_mafia_kill in doctor_healed):
+                    last_night_message = 'mafia attempted to kill a player, but doctor healed the player! '
+                else:
+                    last_night_message = 'mafia killed '+choice_at_night_mafia_kill+ ' and doctor could not heal. '
+                    player_alive_or_dead[players_names.index(choice_at_night_mafia_kill)] = 0
+
+                if (choice_at_night_taktir_shoot == 'nobody'):
+                    last_night_message = last_night_message + 'taktirandaz did not shoot.'
+                else:
+                    if (player_roles[players_names.index(choice_at_night_taktir_shoot)]==5) or (player_roles[players_names.index(choice_at_night_taktir_shoot)]==6):
+                        last_night_message = last_night_message + 'taktirandaz correctly shot '+choice_at_night_taktir_shoot
+                        player_alive_or_dead[players_names.index(choice_at_night_taktir_shoot)] = 0
+                    else:
+                        last_night_message = last_night_message + 'taktirandaz incorrectly shot and died.'
+                        player_alive_or_dead[player_roles.index(4)] = 0
+                # --- --- --- --- --- --- --- ---
+                daynight_num = daynight_num + 1
+                day_or_night = 1
+                #now it is officially the next day! good morning.
+
+            else:
+                update.message.reply_text('we are still not ready to go from night to day.')
+
         next_state = CHOOSING
     # -----------------------------------------------------------------
     elif user_command == 'from day to night' and (is_admin == True or user_id == alternative_khoda):
