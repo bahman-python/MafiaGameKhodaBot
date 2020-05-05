@@ -5,6 +5,7 @@ import logging
 import os.path
 import datetime
 import csv
+import re
 from random import seed
 from random import randint
 from telegram import ReplyKeyboardMarkup
@@ -173,8 +174,40 @@ def made_a_choice(update, context):
                 update.message.reply_text('i could not find your name in players list :-( are you in the game?')
     #-----------------------------------------------------------------
     elif (user_command == 'at night doctor heal'):
-        update.message.reply_text('todo')
         next_state = CHOOSING
+
+        if day_or_night != 2:
+            update.message.reply_text('this action can be used only at night.')
+        else: #-- ok, it is night
+            if user_id in players_names:
+                if player_alive_or_dead[players_names.index(user_id)] == 0:
+                    update.message.reply_text('you are dead in the game')
+                else: #-- ok, user is alive
+                    if player_roles[players_names.index(user_id)] !=3:
+                        update.message.reply_text('this option is only for doctor.')
+                    else: #-- ok, user is doctor
+                        if enable_at_night_doctor_heal == False:
+                            update.message.reply_text('this option can be used only once per night.')
+                        else: #-- ok, everything ready
+                            update.message.reply_text('all players in game:')
+
+                            for i in range(len(players_names)):
+                                current_player = players_names[i]
+                                if player_alive_or_dead[i] == 1:
+                                    current_alive_or_dead = 'alive'
+                                elif player_alive_or_dead[i] == 0:
+                                     current_alive_or_dead = 'dead'
+                                else:
+                                     current_alive_or_dead = 'error?'
+
+                                print_pair = [current_player, current_alive_or_dead]
+                                update.message.reply_text(print_pair)
+
+                            update.message.reply_text('------')
+                            update.message.reply_text('doctor heal at night, which player do you select:')
+                            next_state = TYPING_REPLY
+            else:
+                update.message.reply_text('i could not find your name in players list :-( are you in the game?')
     #-----------------------------------------------------------------
     elif (user_command == 'at night karagah ask'):
         update.message.reply_text('todo')
@@ -581,6 +614,42 @@ def typed_something_after_question(update, context):
             choice_at_night_mafia_kill = player_to_kill
             enable_at_night_mafia_kill = False
             update.message.reply_text('you have now successfully registered your choice for mafia kill: '+player_to_kill)
+    elif (user_command == 'at night doctor heal'):
+        player_to_heal = text
+
+        if doctor_heal_2_first_2_nights == False or daynight_num >=4:
+            if not player_to_heal in players_names:
+                update.message.reply_text('player select by doctor was not found in players list.')
+            else: #ok, player exists
+                choice_at_night_doctor_heal = player_to_heal
+                enable_at_night_doctor_heal = False
+                update.message.reply_text('you have now successfully registered your choice for doctor: '+player_to_heal)
+        else:
+            if len(re.findall(' ', player_to_heal)) != 1:
+                update.message.reply_text('separate user names by one space')
+            else:
+                player1 = player_to_heal[0:player_to_heal.find(' ')]
+                player2 = player_to_heal[(player_to_heal.find(' ')+1):]
+
+                update.message.reply_text('your player 1 choice: ' +player1)
+                update.message.reply_text('your player 2 choice: ' +player2)
+
+                valid_choice = True
+
+                if not player1 in players_names:
+                    update.message.reply_text('i could not find your player 1 in players list')
+                    valid_choice = False
+
+                if not player2 in players_names:
+                    update.message.reply_text('i could not find your player 2 in players list')
+                    valid_choice = False
+
+                if valid_choice == True:
+                    update.message.reply_text('both choices are valid!')
+                    choice_at_night_doctor_heal = player_to_heal
+                    enable_at_night_doctor_heal = False
+                    update.message.reply_text('you have now successfully registered your choices for doctor: ' + player_to_heal)
+
     elif (user_command == 'set player alive'):
         user_to_set_alive = text
 
