@@ -31,6 +31,7 @@ day_or_night = 0      #0=not initialized, 1=day, 2=night
 daynight_num = 0      #0=not initialized, 1=first day or night, 2=second day or night, ...
 last_night_message = 'game has not been initialized yet'
 player_alive_or_dead = []  #1=alive, 0=dead
+total_karagah_askings = []
 
 enable_at_night_mafia_kill = False
 enable_at_night_doctor_heal = False
@@ -72,6 +73,7 @@ def start(update, context):
     return CHOOSING
 
 def made_a_choice(update, context):
+    global total_karagah_askings
     global players_names
     global alternative_khoda
     global player_roles_are_assigned
@@ -121,6 +123,8 @@ def made_a_choice(update, context):
                 enable_at_night_doctor_heal = False
                 enable_at_night_karagah_ask = False
                 enable_at_night_taktir_shoot = False
+
+                total_karagah_askings = []
 
                 choice_at_night_mafia_kill = ''
                 choice_at_night_doctor_heal = ''
@@ -210,9 +214,47 @@ def made_a_choice(update, context):
                 update.message.reply_text('i could not find your name in players list :-( are you in the game?')
     #-----------------------------------------------------------------
     elif (user_command == 'at night karagah ask'):
-        update.message.reply_text('todo')
+        # 0 = not assigned yet
+        # 1 = shahrvand / aadi
+        # 2 = shahrvand / karagah
+        # 3 = shahrvand / doctor
+        # 4 = shahrvand / taktirandaz
+        # 5 = mafia / aadi
+        # 6 = mafia / raees mafia
         next_state = CHOOSING
-    #-----------------------------------------------------------------
+
+        if day_or_night != 2:
+            update.message.reply_text('this action can be used only at night.')
+        else:  # -- ok, it is night
+            if user_id in players_names:
+                if player_alive_or_dead[players_names.index(user_id)] == 0:
+                    update.message.reply_text('you are dead in the game')
+                else:  # -- ok, user is alive
+                    if player_roles[players_names.index(user_id)] != 2:
+                        update.message.reply_text('this option is only for karagah.')
+                    else:  # -- ok, user is taktir
+                        if enable_at_night_karagah_ask == False:
+                            update.message.reply_text('this option can be used only once per night.')
+                        else:  # -- ok, everything ready
+                            update.message.reply_text('all players in game:')
+
+                            for i in range(len(players_names)):
+                                current_player = players_names[i]
+                                if player_alive_or_dead[i] == 1:
+                                    current_alive_or_dead = 'alive'
+                                elif player_alive_or_dead[i] == 0:
+                                    current_alive_or_dead = 'dead'
+                                else:
+                                    current_alive_or_dead = 'error?'
+
+                                print_pair = [current_player, current_alive_or_dead]
+                                update.message.reply_text(print_pair)
+
+                            update.message.reply_text('------')
+                            update.message.reply_text('karagah ask at night, which player do you select:')
+                            next_state = TYPING_REPLY
+            else:
+                update.message.reply_text('i could not find your name in players list :-( are you in the game?')    #-----------------------------------------------------------------
     elif (user_command == 'at night taktir shoot'):
         # 0 = not assigned yet
         # 1 = shahrvand / aadi
@@ -260,11 +302,11 @@ def made_a_choice(update, context):
         update.message.reply_text('robot is up and running.')
         next_state = CHOOSING
     #-----------------------------------------------------------------
-    elif user_command == 'from day to night' and is_admin == False:
+    elif user_command == 'from day to night' and is_admin == False and user_id != alternative_khoda:
         update.message.reply_text('only khoda can do this.')
         next_state = CHOOSING
     #-----------------------------------------------------------------
-    elif user_command == 'from day to night' and is_admin == True:
+    elif user_command == 'from day to night' and (is_admin == True or user_id == alternative_khoda):
         if day_or_night != 1:
             update.message.reply_text('the option should be used in day')
         else: #-- ok, it is day
@@ -308,10 +350,10 @@ def made_a_choice(update, context):
 
         next_state = CHOOSING
     #-----------------------------------------------------------------
-    elif (user_command == 'set player dead' and is_admin == False):
+    elif (user_command == 'set player dead' and is_admin == False and user_id != alternative_khoda):
         update.message.reply_text('only khoda can do this - set player dead')
         next_state = CHOOSING
-    elif (user_command == 'set player dead' and is_admin == True):
+    elif (user_command == 'set player dead' and (is_admin == True or user_id == alternative_khoda)):
         if player_roles_are_assigned == False:
             update.message.reply_text('roles are not defined yet. therefore, game is not initialized')
             next_state = CHOOSING
@@ -338,10 +380,10 @@ def made_a_choice(update, context):
 
             next_state = TYPING_REPLY
 
-    elif (user_command == 'set player alive' and is_admin == False):
+    elif (user_command == 'set player alive' and is_admin == False and user_id != alternative_khoda):
         update.message.reply_text('only khoda can do this - set player alive')
         next_state = CHOOSING
-    elif (user_command == 'set player alive' and is_admin == True):
+    elif (user_command == 'set player alive' and (is_admin == True or user_id == alternative_khoda)):
         if player_roles_are_assigned == False:
             update.message.reply_text('roles are not defined yet. therefore, game is not initialized')
             next_state = CHOOSING
@@ -487,6 +529,10 @@ def made_a_choice(update, context):
                     print_pair = [current_player,current_role]
                     update.message.reply_text(print_pair)
 
+                update.message.reply_text('----------')
+                update.message.reply_text('OBS: all karagah askings are:')
+                update.message.reply_text(total_karagah_askings)
+
                 next_state = CHOOSING
             else:
                 update.message.reply_text('only khoda can have a look at the roles')
@@ -520,6 +566,8 @@ def made_a_choice(update, context):
                 enable_at_night_karagah_ask = False
                 enable_at_night_taktir_shoot = False
 
+                total_karagah_askings = []
+
                 choice_at_night_mafia_kill = ''
                 choice_at_night_doctor_heal = ''
                 choice_at_night_karagah_ask = ''
@@ -538,6 +586,7 @@ def made_a_choice(update, context):
     return next_state
 
 def typed_something_after_question(update, context):
+    global total_karagah_askings
     global players_names
     global num_mafias
     global alternative_khoda
@@ -577,7 +626,7 @@ def typed_something_after_question(update, context):
             enable_at_night_doctor_heal = False
             enable_at_night_karagah_ask = False
             enable_at_night_taktir_shoot = False
-
+            total_karagah_askings = []
             choice_at_night_mafia_kill = ''
             choice_at_night_doctor_heal = ''
             choice_at_night_karagah_ask = ''
@@ -615,6 +664,36 @@ def typed_something_after_question(update, context):
             choice_at_night_taktir_shoot = player_to_shoot
             enable_at_night_taktir_shoot = False
             update.message.reply_text('you have now successfully registered your choice for taktirandaz shoot: '+player_to_shoot)
+    elif (user_command == 'at night karagah ask'):
+        player_to_ask = text
+
+        if not player_to_ask in players_names:
+            update.message.reply_text('player select by karagah was not found in players list.')
+        else: #ok, player exists
+            update.message.reply_text('you as karagah are now asking: '+player_to_ask)
+
+            # 0 = not assigned yet
+            # 1 = shahrvand / aadi
+            # 2 = shahrvand / karagah
+            # 3 = shahrvand / doctor
+            # 4 = shahrvand / taktirandaz
+            # 5 = mafia / aadi
+            # 6 = mafia / raees mafia
+
+            if player_alive_or_dead[players_names.index(player_to_ask)] == 1:
+                choice_at_night_karagah_ask = player_to_ask
+                enable_at_night_karagah_ask = False
+
+                if player_roles[players_names.index(player_to_ask)] == 5 or (player_roles[players_names.index(player_to_ask)] == 6 and player_to_ask in total_karagah_askings):
+                    update.message.reply_text(player_to_ask + ' is mafia')
+                else:
+                    update.message.reply_text(player_to_ask + ' is shahrvand')
+
+                total_karagah_askings = total_karagah_askings + [player_to_ask]
+
+            else:
+                update.message.reply_text('the player you are asking is dead.')
+
     elif (user_command == 'at night mafia kill'):
         player_to_kill = text
 
@@ -675,48 +754,6 @@ def typed_something_after_question(update, context):
             else:
                 player_alive_or_dead[alive_user_index]=1;
 
-    elif (user_command == 'first night karagah ask'):
-        user_to_ask = text
-
-        if(user_to_ask in players_names):
-            user_to_ask_index = players_names.index(user_to_ask)
-            has_karagah_already_asked = True
-
-            now = datetime.datetime.now()
-            timestr = now.strftime('%Y%m%d-%H%M%S karagah ask successful.txt')
-            save_file = open('textfiles/'+timestr, 'a')
-            save_file.write('----list of all players starts here: ' + timestr + ' ----\n')
-
-            for i in range(len(players_names)):
-                write_pair = [players_names[i], player_roles[i], player_roles_as_text[i]]
-                write_text = '<' + ' '.join([str(elem) for elem in write_pair]) + '>\n'
-                save_file.write(write_text)
-
-            save_file.write('----ends here: ' + timestr + ' ----')
-            save_file.write('\nkaragah is asking: '+user_to_ask+' with index '+str(user_to_ask_index)+'\n')
-
-            # 0 = not assigned yet
-            # 1 = shahrvand / aadi
-            # 2 = shahrvand / karagah
-            # 3 = shahrvand / doctor
-            # 4 = shahrvand / taktirandaz
-            # 5 = mafia / aadi
-            # 6 = mafia / raees mafia
-
-            if(player_roles[user_to_ask_index] == 5):
-                update.message.reply_text(players_names[user_to_ask_index] + ' is mafia. :-o')
-                save_file.write('response to karagah: '+players_names[user_to_ask_index] + ' is mafia. :-o\n')
-            else:
-                update.message.reply_text(players_names[user_to_ask_index] + ' is shahrvand. :-)')
-                save_file.write('response to karagah: ' + players_names[user_to_ask_index] + ' is shahrvand. :-)\n')
-
-            save_file.write('karagah ask was invoked by '+user_id+'\ndone.')
-            save_file.close()
-
-            print('OBS. Karagah successfully asked...')
-            write_status() #backup status to disk to reload if crash
-        else:
-            update.message.reply_text('i could not find that user. typing errors?')
 
     elif(user_command=='assign roles'):
         try:
@@ -801,6 +838,7 @@ def main():
     updater.idle()
 
 def assign_roles():
+    global total_karagah_askings
     global num_mafias
     global players_names
     global player_roles
@@ -837,6 +875,7 @@ def assign_roles():
     choice_at_night_doctor_heal = ''
     choice_at_night_karagah_ask = ''
     choice_at_night_taktir_shoot = ''
+    total_karagah_askings = []
 
     num_doctor = 1
     num_karagah = 1
@@ -925,19 +964,6 @@ def assign_roles():
              player_roles_as_text = player_roles_as_text + ['mafia / aadi']
         elif player_roles[i] == 6:
              player_roles_as_text = player_roles_as_text + ['mafia / raees mafia']
-
-    now = datetime.datetime.now()
-    timestr = now.strftime('%Y%m%d-%H%M%S roles backup.txt')
-    save_file = open('textfiles/'+timestr,'a')
-    save_file.write('----starts here: '+timestr+' ----\n')
-
-    for i in range(len(players_names)):
-        write_pair = [players_names[i],player_roles[i],player_roles_as_text[i]]
-        write_text = '<'+ ' '.join([str(elem) for elem in write_pair])+'>\n'
-        save_file.write(write_text)
-
-    save_file.write('----ends here: ' + timestr + ' ----')
-    save_file.close()
 
     player_roles_are_assigned = True
     has_karagah_already_asked = False
