@@ -33,6 +33,8 @@ last_night_message = 'game has not been initialized yet'
 player_alive_or_dead = []  #1=alive, 0=dead
 total_karagah_askings = []
 
+has_taktir_shot_during_game = False
+
 enable_at_night_mafia_kill = False
 enable_at_night_doctor_heal = False
 enable_at_night_karagah_ask = False
@@ -73,6 +75,7 @@ def start(update, context):
     return CHOOSING
 
 def made_a_choice(update, context):
+    global has_taktir_shot_during_game
     global total_karagah_askings
     global players_names
     global alternative_khoda
@@ -126,7 +129,7 @@ def made_a_choice(update, context):
                 enable_at_night_taktir_shoot = False
 
                 total_karagah_askings = []
-
+                has_taktir_shot_during_game = False
                 choice_at_night_mafia_kill = ''
                 choice_at_night_doctor_heal = ''
                 choice_at_night_karagah_ask = ''
@@ -420,8 +423,9 @@ def made_a_choice(update, context):
                 enable_at_night_doctor_heal = False
 
             # is taktir alive?
-            if player_alive_or_dead[player_roles.index(4)] == 0: #taktirandaz is dead
+            if player_alive_or_dead[player_roles.index(4)] == 0 or has_taktir_shot_during_game == True: #taktirandaz is dead or has already shot
                 enable_at_night_taktir_shoot = False
+                choice_at_night_taktir_shoot == 'nobody'
 
             # ok, night is ready. let's go...
             update.message.reply_text('it is night and everywhere is dark.')
@@ -660,7 +664,7 @@ def made_a_choice(update, context):
                 enable_at_night_taktir_shoot = False
 
                 total_karagah_askings = []
-
+                has_taktir_shot_during_game = False
                 choice_at_night_mafia_kill = ''
                 choice_at_night_doctor_heal = ''
                 choice_at_night_karagah_ask = ''
@@ -680,6 +684,7 @@ def made_a_choice(update, context):
     return next_state
 
 def typed_something_after_question(update, context):
+    global has_taktir_shot_during_game
     global total_karagah_askings
     global players_names
     global num_mafias
@@ -721,6 +726,7 @@ def typed_something_after_question(update, context):
             enable_at_night_karagah_ask = False
             enable_at_night_taktir_shoot = False
             total_karagah_askings = []
+            has_taktir_shot_during_game = False
             choice_at_night_mafia_kill = ''
             choice_at_night_doctor_heal = ''
             choice_at_night_karagah_ask = ''
@@ -938,6 +944,7 @@ def main():
     updater.idle()
 
 def assign_roles():
+    global has_taktir_shot_during_game
     global total_karagah_askings
     global num_mafias
     global players_names
@@ -971,6 +978,7 @@ def assign_roles():
     enable_at_night_karagah_ask = False
     enable_at_night_taktir_shoot = False
     last_night_message = 'game has not been initialized yet'
+    has_taktir_shot_during_game = False
     choice_at_night_mafia_kill = ''
     choice_at_night_doctor_heal = ''
     choice_at_night_karagah_ask = ''
