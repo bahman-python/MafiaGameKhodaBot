@@ -1066,8 +1066,6 @@ def assign_roles():
     archive_night_messages = []
     archive_night_actions = []
 
-    day_or_night = 0  # 0=not initialized, 1=day, 2=night
-    daynight_num = 0  # 0=not initialized, 1=first day or night, 2=second day or night, ...
     last_night_message = 'game has not been initialized yet'
     player_alive_or_dead = []  # 1=alive, 0=dead
     total_karagah_askings = []
