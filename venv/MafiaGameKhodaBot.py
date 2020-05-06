@@ -1179,12 +1179,56 @@ def assign_roles():
     has_karagah_already_asked = False
 
 def write_status():
-    global players_names, player_roles, player_roles_as_text, player_roles_are_assigned
-    global num_mafias, alternative_khoda, has_karagah_already_asked, door_to_join_open
+    global num_mafias
+    global has_taktir_shot_during_game
+    global total_karagah_askings
+    global players_names
+    global alternative_khoda
+    global player_roles_are_assigned
+    global player_roles
+    global player_roles_as_text
+    global has_karagah_already_asked
+    global door_to_join_open
+    global day_or_night
+    global daynight_num
+    global enable_at_night_mafia_kill
+    global enable_at_night_doctor_heal
+    global enable_at_night_karagah_ask
+    global enable_at_night_taktir_shoot
+    global last_night_message
+    global choice_at_night_mafia_kill
+    global choice_at_night_doctor_heal
+    global choice_at_night_karagah_ask
+    global choice_at_night_taktir_shoot
+    global player_alive_or_dead
+    global archive_night_messages
+    global archive_night_actions
 
 def read_status():
-    global players_names, player_roles, player_roles_as_text, player_roles_are_assigned
-    global num_mafias, alternative_khoda, has_karagah_already_asked, door_to_join_open
+    global num_mafias
+    global has_taktir_shot_during_game
+    global total_karagah_askings
+    global players_names
+    global alternative_khoda
+    global player_roles_are_assigned
+    global player_roles
+    global player_roles_as_text
+    global has_karagah_already_asked
+    global door_to_join_open
+    global day_or_night
+    global daynight_num
+    global enable_at_night_mafia_kill
+    global enable_at_night_doctor_heal
+    global enable_at_night_karagah_ask
+    global enable_at_night_taktir_shoot
+    global last_night_message
+    global choice_at_night_mafia_kill
+    global choice_at_night_doctor_heal
+    global choice_at_night_karagah_ask
+    global choice_at_night_taktir_shoot
+    global player_alive_or_dead
+    global archive_night_messages
+    global archive_night_actions
 
 def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
