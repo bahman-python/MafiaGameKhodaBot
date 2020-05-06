@@ -1329,9 +1329,73 @@ def read_status():
 
         MySQLQuery = 'SELECT * from MafiaGameKhodaBot.dbo.StatusBackups WHERE log_index='+str(row_id)
 
-        SQLCursor.execute(MySQLQuery)
-        for row in SQLCursor:
-            print(row)
+        MyQueryResult = SQLCursor.execute(MySQLQuery).fetchall()
+
+        for MySQLRow in MyQueryResult:
+            sql_log_index = MySQLRow.log_index
+            sql_log_datetime = MySQLRow.log_datetime
+            sql_num_mafias = MySQLRow.num_mafias
+            sql_has_taktir_shot_during_game = MySQLRow.has_taktir_shot_during_game
+            sql_total_karagah_askings = MySQLRow.total_karagah_askings
+            sql_players_names = MySQLRow.players_names
+            sql_alternative_khoda = MySQLRow.alternative_khoda
+            sql_player_roles_are_assigned = MySQLRow.player_roles_are_assigned
+            sql_player_roles = MySQLRow.player_roles
+            sql_player_roles_as_text = MySQLRow.player_roles_as_text
+            sql_has_karagah_already_asked = MySQLRow.has_karagah_already_asked
+            sql_door_to_join_open = MySQLRow.door_to_join_open
+            sql_day_or_night = MySQLRow.day_or_night
+            sql_daynight_num = MySQLRow.daynight_num
+            sql_enable_at_night_mafia_kill = MySQLRow.enable_at_night_mafia_kill
+            sql_enable_at_night_doctor_heal = MySQLRow.enable_at_night_doctor_heal
+            sql_enable_at_night_karagah_ask = MySQLRow.enable_at_night_karagah_ask
+            sql_enable_at_night_taktir_shoot = MySQLRow.enable_at_night_taktir_shoot
+            sql_last_night_message = MySQLRow.last_night_message
+            sql_choice_at_night_mafia_kill = MySQLRow.choice_at_night_mafia_kill
+            sql_choice_at_night_doctor_heal = MySQLRow.choice_at_night_doctor_heal
+            sql_choice_at_night_karagah_ask = MySQLRow.choice_at_night_karagah_ask
+            sql_choice_at_night_taktir_shoot = MySQLRow.choice_at_night_taktir_shoot
+            sql_player_alive_or_dead = MySQLRow.player_alive_or_dead
+            sql_archive_night_messages = MySQLRow.archive_night_messages
+            sql_archive_night_actions = MySQLRow.archive_night_actions
+
+        #ok, now process the variables and place them at suitable places.
+
+        num_mafias = sql_num_mafias
+
+        has_taktir_shot_during_game = sql_has_taktir_shot_during_game
+
+        # sql_total_karagah_askings
+        # sql_players_names
+
+        alternative_khoda = sql_alternative_khoda
+
+        player_roles_are_assigned = sql_player_roles_are_assigned
+
+        # sql_player_roles
+        # sql_player_roles_as_text
+
+        has_karagah_already_asked = sql_has_karagah_already_asked
+        door_to_join_open = sql_door_to_join_open
+
+        day_or_night = int(sql_day_or_night)
+
+        daynight_num = sql_daynight_num
+        enable_at_night_mafia_kill = sql_enable_at_night_mafia_kill
+        enable_at_night_doctor_heal = sql_enable_at_night_doctor_heal
+        enable_at_night_karagah_ask = sql_enable_at_night_karagah_ask
+        enable_at_night_taktir_shoot = sql_enable_at_night_taktir_shoot
+        last_night_message = sql_last_night_message
+        choice_at_night_mafia_kill = sql_choice_at_night_mafia_kill
+        choice_at_night_doctor_heal = sql_choice_at_night_doctor_heal
+        choice_at_night_karagah_ask = sql_choice_at_night_karagah_ask
+        choice_at_night_taktir_shoot = sql_choice_at_night_taktir_shoot
+
+        # player_alive_or_dead = sql_player_alive_or_dead
+
+        archive_night_messages = [sql_archive_night_messages]
+        archive_night_actions = [sql_archive_night_actions]
+
 
 def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
