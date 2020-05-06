@@ -25,7 +25,7 @@ door_to_join_open = False
 backup_data_loaded = False
 
 #----new variables defined 5 may 2020 ----
-doctor_heal_2_first_2_nights = False
+doctor_heal_2_first_2_nights = True
 
 day_or_night = 0      #0=not initialized, 1=day, 2=night
 daynight_num = 0      #0=not initialized, 1=first day or night, 2=second day or night, ...
