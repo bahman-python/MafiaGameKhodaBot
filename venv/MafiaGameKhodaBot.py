@@ -44,6 +44,9 @@ choice_at_night_mafia_kill = ''
 choice_at_night_doctor_heal = ''
 choice_at_night_karagah_ask = ''
 choice_at_night_taktir_shoot = ''
+
+archive_night_messages = []
+archive_night_actions = []
 #-----------------------------------------
 
 CHOOSING, TYPING_REPLY = range(2)
@@ -96,7 +99,8 @@ def made_a_choice(update, context):
     global choice_at_night_karagah_ask
     global choice_at_night_taktir_shoot
     global player_alive_or_dead
-
+    global archive_night_messages
+    global archive_night_actions
 
     next_state = CHOOSING
     text = update.message.text
@@ -134,6 +138,8 @@ def made_a_choice(update, context):
                 choice_at_night_doctor_heal = ''
                 choice_at_night_karagah_ask = ''
                 choice_at_night_taktir_shoot = ''
+                archive_night_messages = []
+                archive_night_actions = []
 
                 update.message.reply_text('now, i have cleaned up the list of players. the list is empty now')
 
@@ -323,22 +329,24 @@ def made_a_choice(update, context):
 
             if enable_at_night_karagah_ask == True:
                 everything_ready = False
-                update.message.reply_text('karagah has not asked yet.')
+                update.message.reply_text('karagah has not asked yet. waiting for karagah...')
 
             if enable_at_night_taktir_shoot == True:
                 everything_ready = False
-                update.message.reply_text('taktirandaz has not shot yet.')
+                update.message.reply_text('taktirandaz has not shot yet. waiting for taktirandaz...')
 
             if enable_at_night_doctor_heal == True:
                 everything_ready = False
-                update.message.reply_text('doctor has not healed yet.')
+                update.message.reply_text('doctor has not healed yet. waiting for doctor...')
 
             if enable_at_night_mafia_kill == True:
                 everything_ready = False
-                update.message.reply_text('mafia has not killed yet.')
+                update.message.reply_text('mafia has not killed yet. waiting for mafia...')
 
             if everything_ready == True:
-                update.message.reply_text('going from night to day... sun is going up')
+                update.message.reply_text('going from night to day... sun is going up...')
+
+                last_night_message = ''
 
                 # 0 = not assigned yet
                 # 1 = shahrvand / aadi
@@ -347,6 +355,17 @@ def made_a_choice(update, context):
                 # 4 = shahrvand / taktirandaz
                 # 5 = mafia / aadi
                 # 6 = mafia / raees mafia
+
+                if (choice_at_night_taktir_shoot == 'nobody'):
+                    last_night_message = last_night_message + 'taktirandaz did not shoot.'
+                else:
+                    if (player_roles[players_names.index(choice_at_night_taktir_shoot)] == 5) or (
+                            player_roles[players_names.index(choice_at_night_taktir_shoot)] == 6):
+                        last_night_message = last_night_message + 'taktirandaz correctly shot ' + choice_at_night_taktir_shoot
+                        player_alive_or_dead[players_names.index(choice_at_night_taktir_shoot)] = 0
+                    else:
+                        last_night_message = last_night_message + 'taktirandaz incorrectly shot and died.'
+                        player_alive_or_dead[player_roles.index(4)] = 0
 
                 if daynight_num >= 2:
                     # --- process the night events ---
@@ -364,23 +383,18 @@ def made_a_choice(update, context):
 
                     #who died?
                     if (choice_at_night_mafia_kill in doctor_healed):
-                        last_night_message = 'mafia attempted to kill a player, but doctor healed the player! '
+                        last_night_message = ' mafia attempted to kill a player, but doctor healed the player! '
                     else:
-                        last_night_message = 'mafia killed '+choice_at_night_mafia_kill+ ' and doctor could not heal. '
+                        last_night_message = ' mafia killed '+choice_at_night_mafia_kill+ ' and doctor could not heal. '
                         player_alive_or_dead[players_names.index(choice_at_night_mafia_kill)] = 0
 
-                    if (choice_at_night_taktir_shoot == 'nobody'):
-                        last_night_message = last_night_message + 'taktirandaz did not shoot.'
-                    else:
-                        if (player_roles[players_names.index(choice_at_night_taktir_shoot)]==5) or (player_roles[players_names.index(choice_at_night_taktir_shoot)]==6):
-                            last_night_message = last_night_message + 'taktirandaz correctly shot '+choice_at_night_taktir_shoot
-                            player_alive_or_dead[players_names.index(choice_at_night_taktir_shoot)] = 0
-                        else:
-                            last_night_message = last_night_message + 'taktirandaz incorrectly shot and died.'
-                            player_alive_or_dead[player_roles.index(4)] = 0
+
                     # --- --- --- --- --- --- --- ---
                 else:
                     last_night_message = 'in the first night, only karagah asks one. karagah asked successfully...'
+
+                archive_night_messages = archive_night_actions + [['night '+str(daynight_num), last_night_message]]
+                archive_night_actions = archive_night_actions + [['night '+str(daynight_num), ['taktir',choice_at_night_taktir_shoot], ['mafia',choice_at_night_mafia_kill],['doctor',doctor_healed]]]
 
                 daynight_num = daynight_num + 1
                 day_or_night = 1
@@ -629,6 +643,14 @@ def made_a_choice(update, context):
                 update.message.reply_text('OBS: all karagah askings are:')
                 update.message.reply_text(total_karagah_askings)
 
+                update.message.reply_text('----------')
+                update.message.reply_text('OBS: archive of all night actions:')
+                update.message.reply_text(archive_night_actions)
+
+                update.message.reply_text('----------')
+                update.message.reply_text('OBS: archive of all night messages:')
+                update.message.reply_text(archive_night_messages)
+
                 next_state = CHOOSING
             else:
                 update.message.reply_text('only khoda can have a look at the roles')
@@ -674,6 +696,8 @@ def made_a_choice(update, context):
                 player_roles_are_assigned = False
                 alternative_khoda = 'nobody... oh nobody...'
                 has_karagah_already_asked = True
+                archive_night_messages = []
+                archive_night_actions = []
 
                 write_status()  # backup status to disk to reload if crash
             else:
@@ -705,6 +729,8 @@ def typed_something_after_question(update, context):
     global choice_at_night_karagah_ask
     global choice_at_night_taktir_shoot
     global player_alive_or_dead
+    global archive_night_messages
+    global archive_night_actions
 
     text = update.message.text
     user_response = text
@@ -736,6 +762,8 @@ def typed_something_after_question(update, context):
             player_roles_are_assigned = False
             alternative_khoda = 'nobody... oh nobody...'
             has_karagah_already_asked = True
+            archive_night_messages = []
+            archive_night_actions = []
 
             players_names = players_names + [text]
             update.message.reply_text('done adding ' + text)
@@ -965,6 +993,8 @@ def assign_roles():
     global choice_at_night_karagah_ask
     global choice_at_night_taktir_shoot
     global player_alive_or_dead
+    global archive_night_messages
+    global archive_night_actions
 
     player_roles=[]
     player_roles_as_text=[]
@@ -984,6 +1014,8 @@ def assign_roles():
     choice_at_night_karagah_ask = ''
     choice_at_night_taktir_shoot = ''
     total_karagah_askings = []
+    archive_night_messages = []
+    archive_night_actions = []
 
     num_doctor = 1
     num_karagah = 1
