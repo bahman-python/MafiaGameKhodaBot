@@ -819,7 +819,7 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('you have now successfully registered your choice for doctor: '+player_to_heal)
         else:
             if len(re.findall(' ', player_to_heal)) != 1:
-                update.message.reply_text('separate user names by one space')
+                update.message.reply_text('tonight you should heal two players. run \'doctor heal\' again and separate user names by exactly one space')
             else:
                 player1 = player_to_heal[0:player_to_heal.find(' ')]
                 player2 = player_to_heal[(player_to_heal.find(' ')+1):]
