@@ -1016,13 +1016,13 @@ def main():
                          'Database=MafiaGameKhodaBot;'
                          'Trusted_Connection=yes;')
 
-    SQLCursor = SQLConnection.cursor()
-    SQLCursor.execute('SELECT * FROM MafiaGameKhodaBot.dbo.StatusBackups')
+    #SQLCursor = SQLConnection.cursor()
+    #SQLCursor.execute('SELECT * FROM MafiaGameKhodaBot.dbo.StatusBackups')
 
-    print('debug -- listing sql rows:')
-    for row in SQLCursor:
-        print(row)
-    print('debug -- listing complete.')
+    #print('debug -- listing sql rows:')
+    #for row in SQLCursor:
+    #    print(row)
+    #print('debug -- listing complete.')
 
     warnings.simplefilter('error')
     updater = Updater(telegtoken.get_telegram_token(), use_context=True)
@@ -1234,10 +1234,13 @@ def write_status():
     global SQLConnection
 
     SQLCursor = SQLConnection.cursor()
-    SQLCursor.execute('SELECT * FROM MafiaGameKhodaBot.dbo.StatusBackups')
+    #SQLCursor.execute('SELECT * FROM MafiaGameKhodaBot.dbo.StatusBackups')
 
-    log_index=0 #change this
-    log_datetime='abcde' #change this
+    log_index = randint(10000,99999)
+
+    now = datetime.datetime.now()
+    timestr = now.strftime("%Y/%m/%d - %H:%M:%S")
+    log_datetime = timestr
 
     MySQLQuery = 'INSERT INTO MafiaGameKhodaBot.dbo.StatusBackups (log_index, log_datetime, num_mafias,'+\
                  ' has_taktir_shot_during_game, total_karagah_askings, players_names, alternative_khoda'+\
@@ -1250,12 +1253,12 @@ def write_status():
                  ', \'' + str(log_datetime) + '\' '+\
                  ', \'' + str(num_mafias) + '\' '+\
                  ', \'' + str(has_taktir_shot_during_game) + '\' '+\
-                 ', \'' + str(total_karagah_askings) + '\' ' +\
-                 ', \'' + str(players_names) + '\' ' +\
+                 ', \'' + str(total_karagah_askings).replace('\'','\"') + '\' ' +\
+                 ', \'' + str(players_names).replace('\'','\"')  + '\' ' +\
                  ', \'' + str(alternative_khoda) + '\' ' +\
                  ', \'' + str(player_roles_are_assigned) + '\' ' +\
-                 ', \'' + str(player_roles) + '\' ' +\
-                 ', \'' + str(player_roles_as_text) + '\' ' +\
+                 ', \'' + str(player_roles).replace('\'','\"')  + '\' ' +\
+                 ', \'' + str(player_roles_as_text).replace('\'','\"')  + '\' ' +\
                  ', \'' + str(has_karagah_already_asked) + '\' ' +\
                  ', \'' + str(door_to_join_open) + '\' ' +\
                  ', \'' + str(day_or_night) + '\' ' +\
@@ -1270,11 +1273,11 @@ def write_status():
                  ', \'' + str(choice_at_night_karagah_ask) + '\' ' +\
                  ', \'' + str(choice_at_night_taktir_shoot) + '\' ' +\
                  ', \'' + str(player_alive_or_dead) + '\' ' +\
-                 ', \'' + str(archive_night_messages) + '\' ' +\
-                 ', \'' + str(archive_night_actions) + '\' '+\
+                 ', \'' + str(archive_night_messages).replace('\'','\"')  + '\' ' +\
+                 ', \'' + str(archive_night_actions).replace('\'','\"')  + '\' '+\
                  ')'
 
-    print(MySQLQuery)
+    #print(MySQLQuery)
 
     SQLCursor.execute(MySQLQuery)
 
