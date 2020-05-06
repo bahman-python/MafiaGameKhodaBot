@@ -1,4 +1,5 @@
 telegtoken.py
+last_valid_backup.txt
 venv/textfiles/*
 *.pyc
 *__pycache__*
