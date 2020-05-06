@@ -1236,7 +1236,7 @@ def write_status():
     SQLCursor = SQLConnection.cursor()
     #SQLCursor.execute('SELECT * FROM MafiaGameKhodaBot.dbo.StatusBackups')
 
-    log_index = randint(10000,99999)
+    log_index = randint(10000000,99999999)
 
     now = datetime.datetime.now()
     timestr = now.strftime("%Y/%m/%d - %H:%M:%S")
@@ -1282,6 +1282,12 @@ def write_status():
     SQLCursor.execute(MySQLQuery)
 
     SQLConnection.commit()
+
+    save_lastvalidbackup = open("last_valid_backup.txt", 'w')
+    save_lastvalidbackup.write(str(log_index))
+    save_lastvalidbackup.close()
+
+    print('backup saved to disk and SQL server: '+str(log_index))
 
 
 def read_status():
