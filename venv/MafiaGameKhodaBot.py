@@ -26,7 +26,6 @@ has_karagah_already_asked = True
 door_to_join_open = False
 backup_data_loaded = False
 
-#----new variables defined 5 may 2020 ----
 doctor_heal_2_first_2_nights = True
 
 day_or_night = 0      #0=not initialized, 1=day, 2=night
@@ -49,7 +48,6 @@ choice_at_night_taktir_shoot = ''
 
 archive_night_messages = []
 archive_night_actions = []
-#-----------------------------------------
 
 CHOOSING, TYPING_REPLY = range(2)
 
