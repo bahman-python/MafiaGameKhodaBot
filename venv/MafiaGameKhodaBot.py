@@ -384,9 +384,11 @@ def made_a_choice(update, context):
                             player_roles[players_names.index(choice_at_night_taktir_shoot)] == 6):
                         last_night_message = last_night_message + 'taktirandaz correctly shot ' + choice_at_night_taktir_shoot
                         player_alive_or_dead[players_names.index(choice_at_night_taktir_shoot)] = 0
+                        has_taktir_shot_during_game = True
                     else:
                         last_night_message = last_night_message + 'taktirandaz incorrectly shot and died.'
                         player_alive_or_dead[player_roles.index(4)] = 0
+                        has_taktir_shot_during_game = True
 
                 if daynight_num >= 2:
                     # --- process the night events ---
