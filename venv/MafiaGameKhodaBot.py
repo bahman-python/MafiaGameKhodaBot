@@ -1389,7 +1389,6 @@ def read_status():
         door_to_join_open = sql_door_to_join_open
 
         day_or_night = int(sql_day_or_night)
-
         daynight_num = sql_daynight_num
         enable_at_night_mafia_kill = sql_enable_at_night_mafia_kill
         enable_at_night_doctor_heal = sql_enable_at_night_doctor_heal
