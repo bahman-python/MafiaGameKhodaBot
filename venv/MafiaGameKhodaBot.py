@@ -1315,6 +1315,23 @@ def read_status():
     global player_alive_or_dead
     global archive_night_messages
     global archive_night_actions
+    global SQLConnection
+
+    if os.path.exists('last_valid_backup.txt'):
+        print("reading last_valid_backup.txt...")
+        read_file = open("last_valid_backup.txt",'r')
+        lastvalidbackup_row_id = read_file.readline()
+        row_id = int(lastvalidbackup_row_id)
+        read_file.close()
+        print('last valid backup row id is: '+str(row_id))
+
+        SQLCursor = SQLConnection.cursor()
+
+        MySQLQuery = 'SELECT * from MafiaGameKhodaBot.dbo.StatusBackups WHERE log_index='+str(row_id)
+
+        SQLCursor.execute(MySQLQuery)
+        for row in SQLCursor:
+            print(row)
 
 def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
