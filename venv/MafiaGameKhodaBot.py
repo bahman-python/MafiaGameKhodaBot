@@ -141,6 +141,27 @@ def made_a_choice(update, context):
                 archive_night_messages = []
                 archive_night_actions = []
 
+                day_or_night = 0  # 0=not initialized, 1=day, 2=night
+                daynight_num = 0  # 0=not initialized, 1=first day or night, 2=second day or night, ...
+                last_night_message = 'game has not been initialized yet'
+                player_alive_or_dead = []  # 1=alive, 0=dead
+                total_karagah_askings = []
+
+                has_taktir_shot_during_game = False
+
+                enable_at_night_mafia_kill = False
+                enable_at_night_doctor_heal = False
+                enable_at_night_karagah_ask = False
+                enable_at_night_taktir_shoot = False
+
+                choice_at_night_mafia_kill = ''
+                choice_at_night_doctor_heal = ''
+                choice_at_night_karagah_ask = ''
+                choice_at_night_taktir_shoot = ''
+
+                archive_night_messages = []
+                archive_night_actions = []
+
                 update.message.reply_text('now, i have cleaned up the list of players. the list is empty now')
 
                 next_state = CHOOSING
@@ -706,6 +727,27 @@ def made_a_choice(update, context):
                 archive_night_messages = []
                 archive_night_actions = []
 
+                day_or_night = 0  # 0=not initialized, 1=day, 2=night
+                daynight_num = 0  # 0=not initialized, 1=first day or night, 2=second day or night, ...
+                last_night_message = 'game has not been initialized yet'
+                player_alive_or_dead = []  # 1=alive, 0=dead
+                total_karagah_askings = []
+
+                has_taktir_shot_during_game = False
+
+                enable_at_night_mafia_kill = False
+                enable_at_night_doctor_heal = False
+                enable_at_night_karagah_ask = False
+                enable_at_night_taktir_shoot = False
+
+                choice_at_night_mafia_kill = ''
+                choice_at_night_doctor_heal = ''
+                choice_at_night_karagah_ask = ''
+                choice_at_night_taktir_shoot = ''
+
+                archive_night_messages = []
+                archive_night_actions = []
+
                 write_status()  # backup status to disk to reload if crash
             else:
                 update.message.reply_text('the door to join is closed at the moment... please ask khoda to open the door.')
@@ -1021,6 +1063,27 @@ def assign_roles():
     choice_at_night_karagah_ask = ''
     choice_at_night_taktir_shoot = ''
     total_karagah_askings = []
+    archive_night_messages = []
+    archive_night_actions = []
+
+    day_or_night = 0  # 0=not initialized, 1=day, 2=night
+    daynight_num = 0  # 0=not initialized, 1=first day or night, 2=second day or night, ...
+    last_night_message = 'game has not been initialized yet'
+    player_alive_or_dead = []  # 1=alive, 0=dead
+    total_karagah_askings = []
+
+    has_taktir_shot_during_game = False
+
+    enable_at_night_mafia_kill = False
+    enable_at_night_doctor_heal = False
+    enable_at_night_karagah_ask = False
+    enable_at_night_taktir_shoot = False
+
+    choice_at_night_mafia_kill = ''
+    choice_at_night_doctor_heal = ''
+    choice_at_night_karagah_ask = ''
+    choice_at_night_taktir_shoot = ''
+
     archive_night_messages = []
     archive_night_actions = []
 
