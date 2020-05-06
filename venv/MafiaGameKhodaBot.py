@@ -25,7 +25,7 @@ door_to_join_open = False
 backup_data_loaded = False
 
 #----new variables defined 5 may 2020 ----
-doctor_heal_2_first_2_nights = True
+doctor_heal_2_first_2_nights = False
 
 day_or_night = 0      #0=not initialized, 1=day, 2=night
 daynight_num = 0      #0=not initialized, 1=first day or night, 2=second day or night, ...
@@ -383,18 +383,20 @@ def made_a_choice(update, context):
 
                     #who died?
                     if (choice_at_night_mafia_kill in doctor_healed):
-                        last_night_message = ' mafia attempted to kill a player, but doctor healed the player! '
+                        last_night_message = last_night_message+' mafia attempted to kill a player, but doctor healed the player! '
                     else:
-                        last_night_message = ' mafia killed '+choice_at_night_mafia_kill+ ' and doctor could not heal. '
+                        last_night_message = last_night_message+' mafia killed '+choice_at_night_mafia_kill+ ' and doctor could not heal. '
                         player_alive_or_dead[players_names.index(choice_at_night_mafia_kill)] = 0
 
 
                     # --- --- --- --- --- --- --- ---
                 else:
                     last_night_message = 'in the first night, only karagah asks one. karagah asked successfully...'
+                    doctor_healed = ['nobody']
+                    choice_at_night_mafia_kill = 'nobody'
 
-                archive_night_messages = archive_night_actions + [['night '+str(daynight_num), last_night_message]]
-                archive_night_actions = archive_night_actions + [['night '+str(daynight_num), ['taktir',choice_at_night_taktir_shoot], ['mafia',choice_at_night_mafia_kill],['doctor',doctor_healed]]]
+                archive_night_messages = archive_night_messages + [['night '+str(daynight_num), last_night_message]]
+                archive_night_actions = archive_night_actions + [['night '+str(daynight_num), ['taktir',choice_at_night_taktir_shoot], ['mafia',choice_at_night_mafia_kill],['doctor']+doctor_healed]]
 
                 daynight_num = daynight_num + 1
                 day_or_night = 1
@@ -414,11 +416,16 @@ def made_a_choice(update, context):
             enable_at_night_doctor_heal = True
             enable_at_night_karagah_ask = True
             enable_at_night_taktir_shoot = True
+            choice_at_night_mafia_kill = ''
+            choice_at_night_doctor_heal = ''
+            choice_at_night_taktir_shoot = ''
+            choice_at_night_karagah_ask = ''
 
             if daynight_num == 1:
                 enable_at_night_mafia_kill = False
                 enable_at_night_doctor_heal = False
                 enable_at_night_taktir_shoot = False
+                choice_at_night_taktir_shoot = 'nobody'
 
             # 0 = not assigned yet
             # 1 = shahrvand / aadi
@@ -439,7 +446,7 @@ def made_a_choice(update, context):
             # is taktir alive?
             if player_alive_or_dead[player_roles.index(4)] == 0 or has_taktir_shot_during_game == True: #taktirandaz is dead or has already shot
                 enable_at_night_taktir_shoot = False
-                choice_at_night_taktir_shoot == 'nobody'
+                choice_at_night_taktir_shoot = 'nobody'
 
             # ok, night is ready. let's go...
             update.message.reply_text('it is night and everywhere is dark.')
