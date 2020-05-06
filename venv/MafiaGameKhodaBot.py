@@ -1365,15 +1365,25 @@ def read_status():
 
         has_taktir_shot_during_game = sql_has_taktir_shot_during_game
 
-        # sql_total_karagah_askings
-        # sql_players_names
+        # ++++ sql_total_karagah_askings
+        total_karagah_askings = json.loads(sql_total_karagah_askings)
+        # ----- sql_total_karagah_askings
+
+        # +++++ sql_players_names
+        players_names = json.loads(sql_players_names)
+        # ----- sql_players_names
 
         alternative_khoda = sql_alternative_khoda
 
         player_roles_are_assigned = sql_player_roles_are_assigned
 
-        # sql_player_roles
-        # sql_player_roles_as_text
+        # +++++ sql_player_roles
+        player_roles = json.loads(sql_player_roles)
+        # ----- sql_player_roles
+
+        # +++++ sql_player_roles_as_text
+        player_roles_as_text = json.loads(sql_player_roles_as_text)
+        # ----- sql_player_roles_as_text
 
         has_karagah_already_asked = sql_has_karagah_already_asked
         door_to_join_open = sql_door_to_join_open
@@ -1391,10 +1401,12 @@ def read_status():
         choice_at_night_karagah_ask = sql_choice_at_night_karagah_ask
         choice_at_night_taktir_shoot = sql_choice_at_night_taktir_shoot
 
-        # player_alive_or_dead = sql_player_alive_or_dead
+        # +++++ sql_player_alive_or_dead
+        player_alive_or_dead = json.loads(sql_player_alive_or_dead)
+        # ---- sql_player_alive_or_dead
 
-        archive_night_messages = [sql_archive_night_messages]
-        archive_night_actions = [sql_archive_night_actions]
+        archive_night_messages = json.loads(sql_archive_night_messages)
+        archive_night_actions = json.loads(sql_archive_night_actions)
 
 
 def error(update, context):
