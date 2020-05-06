@@ -166,7 +166,7 @@ def made_a_choice(update, context):
 
                 next_state = CHOOSING
 
-                write_status() #backup status to disk to reload if crash
+                write_status()
             else:
                 update.message.reply_text('door to join should be OPEN in order to remove all players')
         else:
@@ -425,6 +425,8 @@ def made_a_choice(update, context):
                 day_or_night = 1
                 #now it is officially the next day! good morning.
 
+                write_status()
+
             else:
                 update.message.reply_text('we are still not ready to go from night to day.')
 
@@ -473,6 +475,8 @@ def made_a_choice(update, context):
 
             # ok, night is ready. let's go...
             update.message.reply_text('it is night and everywhere is dark.')
+
+            write_status()
 
         next_state = CHOOSING
     #-----------------------------------------------------------------
@@ -581,7 +585,7 @@ def made_a_choice(update, context):
             update.message.reply_text('the door to join is now OPEN.')
             next_state = CHOOSING
 
-            write_status()  # backup status to disk to reload if crash
+            write_status()
         else:
             update.message.reply_text('only admin can open the door')
             next_state = CHOOSING
@@ -592,7 +596,7 @@ def made_a_choice(update, context):
             update.message.reply_text('the door to join is now CLOSED.')
             next_state = CHOOSING
 
-            write_status()  # backup status to disk to reload if crash
+            write_status()
         else:
             update.message.reply_text('only admin can close the door')
             next_state = CHOOSING
@@ -750,7 +754,7 @@ def made_a_choice(update, context):
                 archive_night_messages = []
                 archive_night_actions = []
 
-                write_status()  # backup status to disk to reload if crash
+                write_status()
             else:
                 update.message.reply_text('the door to join is closed at the moment... please ask khoda to open the door.')
     #-----------------------------------------------------------------
@@ -819,7 +823,7 @@ def typed_something_after_question(update, context):
             players_names = players_names + [text]
             update.message.reply_text('done adding ' + text)
 
-            write_status()  # backup status to disk to reload if crash
+            write_status()
     #-----------------------------------------------------------------
     elif (user_command == 'set player dead'):
         user_to_set_dead = text
@@ -835,6 +839,7 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('player status was already: dead')
             else:
                 player_alive_or_dead[dead_user_index]=0;
+                write_status()
     #-----------------------------------------------------------------
     elif (user_command == 'at night taktir shoot'):
         player_to_shoot = text
@@ -845,6 +850,7 @@ def typed_something_after_question(update, context):
             choice_at_night_taktir_shoot = player_to_shoot
             enable_at_night_taktir_shoot = False
             update.message.reply_text('you have now successfully registered your choice for taktirandaz shoot: '+player_to_shoot)
+            write_status()
     #-----------------------------------------------------------------
     elif (user_command == 'at night karagah ask'):
         player_to_ask = text
@@ -872,6 +878,7 @@ def typed_something_after_question(update, context):
                     update.message.reply_text(player_to_ask + ' is shahrvand')
 
                 total_karagah_askings = total_karagah_askings + [player_to_ask]
+                write_status()
 
             else:
                 update.message.reply_text('the player you are asking is dead.')
@@ -885,6 +892,7 @@ def typed_something_after_question(update, context):
             choice_at_night_mafia_kill = player_to_kill
             enable_at_night_mafia_kill = False
             update.message.reply_text('you have now successfully registered your choice for mafia kill: '+player_to_kill)
+            write_status()
     #-----------------------------------------------------------------
     elif (user_command == 'at night doctor heal'):
         player_to_heal = text
@@ -896,6 +904,7 @@ def typed_something_after_question(update, context):
                 choice_at_night_doctor_heal = player_to_heal
                 enable_at_night_doctor_heal = False
                 update.message.reply_text('you have now successfully registered your choice for doctor: '+player_to_heal)
+                write_status()
         else:
             if len(re.findall(' ', player_to_heal)) != 1:
                 update.message.reply_text('tonight you should heal two players. run \'doctor heal\' again and separate user names by exactly one space')
@@ -921,6 +930,7 @@ def typed_something_after_question(update, context):
                     choice_at_night_doctor_heal = player_to_heal
                     enable_at_night_doctor_heal = False
                     update.message.reply_text('you have now successfully registered your choices for doctor: ' + player_to_heal)
+                    write_status()
     #-----------------------------------------------------------------
     elif (user_command == 'set player alive'):
         user_to_set_alive = text
@@ -936,6 +946,7 @@ def typed_something_after_question(update, context):
                 update.message.reply_text('player status was already: alive')
             else:
                 player_alive_or_dead[alive_user_index]=1;
+                write_status()
     #-----------------------------------------------------------------
     elif(user_command=='assign roles'):
         try:
@@ -953,7 +964,7 @@ def typed_something_after_question(update, context):
                 assign_roles()
                 update.message.reply_text('done assigning')
 
-                write_status()  # backup status to disk to reload if crash
+                write_status()
 
                 if (user_id in players_names):
                     user_index = players_names.index(user_id)
