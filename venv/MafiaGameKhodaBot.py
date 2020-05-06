@@ -1,3 +1,5 @@
+import pandas as pd
+import pyodbc
 import warnings
 import telegtoken
 import json
@@ -1007,6 +1009,21 @@ def done(update, context):
     return ConversationHandler.END
 
 def main():
+    global SQLConnection
+
+    SQLConnection = pyodbc.connect('Driver={SQL Server Native Client 11.0};'
+                         r'Server=localhost;'
+                         'Database=MafiaGameKhodaBot;'
+                         'Trusted_Connection=yes;')
+
+    SQLCursor = SQLConnection.cursor()
+    SQLCursor.execute('SELECT * FROM MafiaGameKhodaBot.dbo.StatusBackups')
+
+    print('debug -- listing sql rows:')
+    for row in SQLCursor:
+        print(row)
+    print('debug -- listing complete.')
+
     warnings.simplefilter('error')
     updater = Updater(telegtoken.get_telegram_token(), use_context=True)
     dp = updater.dispatcher
@@ -1214,6 +1231,55 @@ def write_status():
     global player_alive_or_dead
     global archive_night_messages
     global archive_night_actions
+    global SQLConnection
+
+    SQLCursor = SQLConnection.cursor()
+    SQLCursor.execute('SELECT * FROM MafiaGameKhodaBot.dbo.StatusBackups')
+
+    log_index=0 #change this
+    log_datetime='abcde' #change this
+
+    MySQLQuery = 'INSERT INTO MafiaGameKhodaBot.dbo.StatusBackups (log_index, log_datetime, num_mafias,'+\
+                 ' has_taktir_shot_during_game, total_karagah_askings, players_names, alternative_khoda'+\
+                 ', player_roles_are_assigned, player_roles, player_roles_as_text, has_karagah_already_asked,'+\
+                 ' door_to_join_open, day_or_night, daynight_num, enable_at_night_mafia_kill,'+\
+                 ' enable_at_night_doctor_heal, enable_at_night_karagah_ask, enable_at_night_taktir_shoot,'+\
+                 ' last_night_message, choice_at_night_mafia_kill, choice_at_night_doctor_heal,'+\
+                 ' choice_at_night_karagah_ask, choice_at_night_taktir_shoot, player_alive_or_dead,'+\
+                 ' archive_night_messages, archive_night_actions) VALUES (' + str(log_index) +\
+                 ', \'' + str(log_datetime) + '\' '+\
+                 ', \'' + str(num_mafias) + '\' '+\
+                 ', \'' + str(has_taktir_shot_during_game) + '\' '+\
+                 ', \'' + str(total_karagah_askings) + '\' ' +\
+                 ', \'' + str(players_names) + '\' ' +\
+                 ', \'' + str(alternative_khoda) + '\' ' +\
+                 ', \'' + str(player_roles_are_assigned) + '\' ' +\
+                 ', \'' + str(player_roles) + '\' ' +\
+                 ', \'' + str(player_roles_as_text) + '\' ' +\
+                 ', \'' + str(has_karagah_already_asked) + '\' ' +\
+                 ', \'' + str(door_to_join_open) + '\' ' +\
+                 ', \'' + str(day_or_night) + '\' ' +\
+                 ', \'' + str(daynight_num) + '\' ' +\
+                 ', \'' + str(enable_at_night_mafia_kill) + '\' ' +\
+                 ', \'' + str(enable_at_night_doctor_heal) + '\' ' +\
+                 ', \'' + str(enable_at_night_karagah_ask) + '\' ' +\
+                 ', \'' + str(enable_at_night_taktir_shoot) + '\' ' +\
+                 ', \'' + str(last_night_message) + '\' ' +\
+                 ', \'' + str(choice_at_night_mafia_kill) + '\' ' +\
+                 ', \'' + str(choice_at_night_doctor_heal) + '\' ' +\
+                 ', \'' + str(choice_at_night_karagah_ask) + '\' ' +\
+                 ', \'' + str(choice_at_night_taktir_shoot) + '\' ' +\
+                 ', \'' + str(player_alive_or_dead) + '\' ' +\
+                 ', \'' + str(archive_night_messages) + '\' ' +\
+                 ', \'' + str(archive_night_actions) + '\' '+\
+                 ')'
+
+    print(MySQLQuery)
+
+    SQLCursor.execute(MySQLQuery)
+
+    SQLConnection.commit()
+
 
 def read_status():
     global num_mafias
