@@ -990,12 +990,9 @@ def typed_something_after_question(update, context):
     #-----------------------------------------------------------------
     elif (user_command == 'set new khoda'):
         new_khoda_candidate = text
-        if not new_khoda_candidate in players_names:
-            update.message.reply_text('the new khoda candidate is not in players list. :-( typing errors??')
-        else:
-            alternative_khoda = new_khoda_candidate
-            update.message.reply_text('ok, now '+new_khoda_candidate+' is set as khoda. he/she can read all players roles.')
-            write_status()
+        alternative_khoda = new_khoda_candidate
+        update.message.reply_text('ok, now '+new_khoda_candidate+' is set as khoda. he/she can read all players roles.')
+        write_status()
     #-----------------------------------------------------------------
 
     update.message.reply_text('...', reply_markup=markup)
